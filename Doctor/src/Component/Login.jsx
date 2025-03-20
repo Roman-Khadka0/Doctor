@@ -16,7 +16,7 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen" style={{ backgroundColor: "#897059" }}>
+    <div className="flex items-center justify-center min-h-screen" style={{ backgroundColor: "#EAE7DD" }}>
       <div className="w-full max-w-md p-6 shadow-xl bg-white rounded-2xl">
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">Login</h2>
         <div>
@@ -59,22 +59,26 @@ export default function Login() {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={() => setRememberMe(!rememberMe)}
-                  className="form-checkbox"
+                  className="form-checkbox" 
+                  style={{ background: "#99775C" }}
                 />
                 <span>Remember me</span>
               </label>
-              <a href="#" className="text-sm text-blue-500 hover:underline">
-                Forgot password?
-              </a>
             </div>
 
             <button 
                 type="submit" 
                 className="w-full py-2 rounded-lg"
-                style={{ backgroundColor: "#897059", color: "white" }}
+                style={{ backgroundColor: "#99775C", color: "white" }}
             >
                 Login
             </button>
+            <div>
+            <a href="#" className="text-sm hover:underline text-xl" 
+               style={{ text: "#99775C" }}>
+              Forgot password? Help is on your way!!
+              </a>
+            </div>
           </form>
         </div>
       </div>
