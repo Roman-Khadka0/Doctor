@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Lock, Mail } from "lucide-react";
+import {  Lock, Mail } from "lucide-react";
 import Black from "../assets/Black.png";
-import google from "../assets/google.png";
+import { Link } from "react-router-dom";
 
-const Landing = () => {
+
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -13,40 +14,37 @@ const Landing = () => {
     console.log({ email, password, rememberMe });
   };
 
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#B988C9]">
       <div className="flex w-[900px] bg-white rounded-xl overflow-hidden shadow-lg">
-        {/* left image*/}
+        {/* Left Image */}
         <div className="w-2/2 bg-[#5A0078] p-0 flex flex-col justify-end items-center relative">
-          <img
-            src={Black}
-            alt="Doctor"
-            className="w-full h-auto"
-          />
+          <img src={Black} alt="Doctor" className="w-full h-auto" />
         </div>
 
-        {/*Login Form*/}
+        {/* Login Form */}
         <div className="w-3/2 p-10 flex flex-col justify-center">
           <h2 className="text-xl font-semibold text-center text-gray-700">Hello There!!</h2>
           <p className="text-center text-gray-500">Solution for your problem!!</p>
-
-          {/*Google*/}
-          <button className="mt-4 flex items-center justify-center bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700">
-            <img
-              src={google}
-              alt="Google"
-              className="w-5 h-5 mr-2"
-            />
-            Log in with Google
-          </button>
-
+          <br />
+          <div>
+            <h1 className="text-xl font-semibold text-center text-purple-700"> Lets Start</h1>
+            <br />
+            <Link to="/SignUp">
+            <button type = "signup" className="w-full py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700">
+              SignUp
+            </button>
+            </Link>
+          </div>
+          
           <div className="flex items-center my-4">
             <hr className="flex-grow border-gray-300" />
             <span className="mx-2 text-gray-500">OR</span>
             <hr className="flex-grow border-gray-300" />
           </div>
 
-          {/*Login Form*/}
+          {/* Login Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="email" className="block font-medium text-gray-700">Email</label>
@@ -85,20 +83,17 @@ const Landing = () => {
                 <input
                   type="checkbox"
                   checked={rememberMe}
-                  onChange={() => setRememberMe(!rememberMe)}
-                  className="form-checkbox" 
+                  onChange={() => setRememberMe(!rememberMe)} // ✅ Fixed toggle
+                  className="form-checkbox"
                 />
                 <span>Remember me</span>
               </label>
             </div>
 
-            <button 
-              type="submit" 
-              className="w-full py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700"
-            >
+            <button type="submit" className="w-full py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700">
               Login
             </button>
-            
+
             <div className="text-center mt-3">
               <a href="#" className="text-sm text-purple-600 hover:underline">
                 Forgot password? Help is on your way!!
@@ -111,4 +106,4 @@ const Landing = () => {
   );
 };
 
-export default Landing;
+export default Login; // 
