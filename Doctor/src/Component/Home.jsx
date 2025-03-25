@@ -8,7 +8,7 @@ function Landing() {
         <div className="container mx-auto px-4 flex items-center justify-between">
           <div className="flex items-center">
             <div className="mr-10">
-              <img src={Logo} alt="logo" className="h-40 w-40" />
+              <img src={Logo} alt="logo" className="h-15 w-15" />
             </div>
 
             <nav className="hidden lg:flex space-x-10 text-xl">
