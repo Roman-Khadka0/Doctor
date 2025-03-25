@@ -2,44 +2,44 @@ import Logo from "../assets/Logo.png";
 
 function Landing() {
   return (
-    <div className="min-h-screen flex flex-col">
-    {/* Navigation Bar */}
-    <header className="border-b py-4">
-      <div className="container mx-auto px-4 flex items-center justify-between">
-        <div className="flex items-center">
-          <div className="mr-4">
-            <img src={Logo} alt="logo" className="h-10" />
+    <div className="max-h-screen flex flex-col bg-black">
+      {/* Navigation Bar */}
+      <header className="border-b py-4">
+        <div className="container mx-auto px-4 flex items-center justify-between">
+          <div className="flex items-center">
+            <div className="mr-10">
+              <img src={Logo} alt="logo" className="h-40 w-40" />
+            </div>
+
+            <nav className="hidden lg:flex space-x-10 text-xl">
+              <NavItem text="Find Doctors" />
+              <NavItem text="Consultation" />
+              <NavItem text="Specialist" />
+              <NavItem text="Packages" />
+              <NavItem text="Tests" />
+              <NavItem text="Appointments" />
+            </nav>
           </div>
-          <nav className="hidden lg:flex space-x-4 text-sm">
-            <NavItem text="Find Doctors" />
-            <NavItem text="Consultation" />
-            <NavItem text="Specialist" />
-            <NavItem text="Packages" />
-            <NavItem text="Tests" />
-            <NavItem text="Appointments" />
-          </nav>
+          <div className="flex items-center space-x-4 text-lg">
+            <button className="flex items-center text-white font-semibold">
+              <UserIcon className="w-4 h-4 mr-2" /> LOGIN
+            </button>
+            <button className="border border-purple-500 text-purple-500 px-4 py-2 rounded-lg text-lg">
+              SIGN UP
+            </button>
+          </div>
         </div>
-        <div className="flex items-center space-x-2 text-xs">
-          <button className="flex items-center text-gray-700 font-medium">
-            <UserIcon className="w-3 h-3 mr-1" /> LOGIN
-          </button>
-          <button className="border border-red-500 text-red-500 px-3 py-1 rounded text-xs">
-            SIGN UP
-          </button>
-        </div>
-      </div>
-    </header>
-  
+      </header>
 
       {/* Hero Section */}
       <section className="bg-purple-700 relative overflow-hidden">
-        <div className="container mx-auto px-4 py-16 md:py-24 flex flex-col md:flex-row items-center">
+        <div className="container mx-auto px-4 py-20 md:py-28 flex flex-col md:flex-row items-center">
           <div className="md:w-1/2 z-10 mb-10 md:mb-0">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-8">
               Keep yourself and your family healthy
             </h1>
-            <button className="bg-purple-500 hover:bg-purple-800 text-white px-6 py-3 rounded-md flex items-center font-medium">
-              Consult Now <ChevronRightIcon className="ml-2 w-5 h-5" />
+            <button className="bg-purple-500 hover:bg-purple-800 text-white px-8 py-4 rounded-lg text-xl flex items-center font-semibold">
+              Consult Now <ChevronRightIcon className="ml-3 w-6 h-6" />
             </button>
           </div>
           <div className="md:w-1/2 relative">
@@ -56,7 +56,7 @@ function Landing() {
 }
 
 const NavItem = ({ text }) => (
-  <a href="#" className="text-gray-700 hover:text-red-500 font-medium text-sm whitespace-nowrap">
+  <a href="#" className="text-white hover:text-purple-500 font-semibold text-lg whitespace-nowrap">
     {text}
   </a>
 );
