@@ -1,4 +1,5 @@
 import Logo from "../assets/Logo.png";
+import Lady from "../assets/female-doctor.png";
 
 function Landing() {
   return (
@@ -44,7 +45,7 @@ function Landing() {
           </div>
           <div className="md:w-1/2 relative">
             <img
-              src="https://placehold.co/600x500"
+              src={Lady}
               alt="Happy family with baby"
               className="w-full h-auto object-cover"
             />
