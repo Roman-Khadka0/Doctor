@@ -12,6 +12,23 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log({ email, password, rememberMe });
+    fetch("http://localhost:5000/login",{
+      method: "POST",
+      crossDomain: true,
+      headers: {
+        "Content-Type":"application/json",
+        Accept:"application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body:JSON.stringify({
+        email,
+        password
+      }),
+    })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data, "userRegister")
+    })
   };
 
 

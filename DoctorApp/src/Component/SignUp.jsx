@@ -16,6 +16,24 @@ const SignUp = () => {
       return;
     }
     console.log({ name, email, password });
+    fetch("http://localhost:5000/signup",{
+      method: "POST",
+      crossDomain: true,
+      headers: {
+        "Content-Type":"application/json",
+        Accept:"application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body:JSON.stringify({
+        name,
+        email,
+        password
+      }),
+    })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data, "userRegister")
+    })
   };
 
   return (
@@ -51,6 +69,7 @@ const SignUp = () => {
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
                 <input
                   id="name"
+                  name = "name"
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -67,6 +86,7 @@ const SignUp = () => {
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
                 <input
                   id="email"
+                  name="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -83,6 +103,7 @@ const SignUp = () => {
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
                 <input
                   id="password"
+                  name="password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

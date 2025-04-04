@@ -8,7 +8,7 @@ function App() {
   const [message, setMessage] = useState(""); // Define state
 
   useEffect(() => {
-    fetch("http://localhost:5001/api/message", {
+    fetch("http://localhost:5000/api/message", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
