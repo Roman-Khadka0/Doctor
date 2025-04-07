@@ -3,9 +3,10 @@ import { useEffect, useState } from "react";
 import Login from "./Component/Login";
 import SignUp from "./Component/SignUp";
 import Home from "./Component/Home";
+import Dashboard from "./Component/Dashboard";
 
 function App() {
-  const [message, setMessage] = useState(""); // Define state
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     fetch("http://localhost:5000/api/message", {
@@ -15,20 +16,25 @@ function App() {
       },
       body: JSON.stringify({ email: "test@example.com", password: "password123" }),
     })
-    
-      .then(response => response.json())
-      .then(data => setMessage(data.message))
-      .catch(error => console.error("Error:", error));
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Server error");
+        }
+        return response.json();
+      })
+      .then((data) => setMessage(data.message))
+      .catch((error) => console.error("Error:", error));
   }, []);
 
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="login" element={<Login />} />
-        <Route path="signup" element={<SignUp />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
-      <p>Backend Message: {message}</p> {/* Display API message */}
+      <p>Backend Message: {message}</p>
     </Router>
   );
 }

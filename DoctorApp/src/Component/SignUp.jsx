@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Lock, Mail, User } from "lucide-react";
 import Doctor from "../assets/Doctors.png";
 import google from "../assets/google.png";
+import { Link } from "react-router-dom";
 
 const SignUp = () => {
   const [name, setName] = useState("");
@@ -37,23 +38,26 @@ const SignUp = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-[#B988C9]">
+    <div className="flex items-center justify-center min-h-screen bg-[#4AA8B570]">
       <div className="flex w-[900px] bg-white rounded-xl overflow-hidden shadow-lg">
         {/* Left Image */}
-        <div className="w-2/2 bg-[#5A0078] p-0 flex flex-col justify-end items-center relative">
+        <div className="w-2/2 bg-[#4AA8B5] p-0 flex flex-col justify-end items-center relative">
           <img src={Doctor} alt="Doctor" className="w-full h-auto" />
         </div>
 
         {/* Sign Up Form */}
         <div className="w-3/2 p-10 flex flex-col justify-center">
-          <h2 className="text-xl font-semibold text-center text-gray-700">Welcome!!</h2>
-          <p className="text-center text-gray-500">Join us and start your journey!!</p>
+          <h2 className="text-xl font-semibold text-center text-[#4AA8B5]">Welcome!!</h2>
+          <p className="text-center text-gray">Join us and start your journey!!</p>
 
-          {/* Google Sign Up */}
-          <button className="mt-4 flex items-center justify-center bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700">
-            <img src={google} alt="Google" className="w-5 h-5 mr-2" />
-            Sign up with Google
+          {/* login */}
+          <div className="mt-4 flex items-center justify-center  text-white px-4 py-2 rounded-md bg-[#4AA8B5] hover:bg-[#4a7d84]git">
+          <Link to="/Login">
+          <button className="">
+            Login
           </button>
+          </Link>
+          </div>
 
           <div className="flex items-center my-4">
             <hr className="flex-grow border-gray-300" />
@@ -74,7 +78,7 @@ const SignUp = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Enter your full name"
-                  className="w-full border rounded-lg px-10 py-2 focus:ring-2 focus:ring-purple-400"
+                  className="w-full border rounded-lg px-10 py-2 focus:ring-2 focus:ring-[#4AA8B5]"
                   required
                 />
               </div>
@@ -91,7 +95,7 @@ const SignUp = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
-                  className="w-full border rounded-lg px-10 py-2 focus:ring-2 focus:ring-purple-400"
+                  className="w-full border rounded-lg px-10 py-2 focus:ring-2 focus:ring-[#4AA8B5]"
                   required
                 />
               </div>
@@ -108,7 +112,7 @@ const SignUp = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Create a password"
-                  className="w-full border rounded-lg px-10 py-2 focus:ring-2 focus:ring-purple-400"
+                  className="w-full border rounded-lg px-10 py-2 focus:ring-2 focus:ring-[#4AA8B5]"
                   required
                 />
               </div>
@@ -124,7 +128,9 @@ const SignUp = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Confirm your password"
-                  className="w-full border rounded-lg px-10 py-2 focus:ring-2 focus:ring-purple-400"
+                  className="w-full border rounded-lg px-10 py-2 focus:ring-2 focus:ring-[#4AA8B5]"
+
+
                   required
                 />
               </div>
@@ -132,7 +138,7 @@ const SignUp = () => {
 
             <button 
               type="submit" 
-              className="w-full py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700"
+              className="w-full py-2 rounded-lg bg-[#4AA8B5] hover:bg-[#4a7d84] text-white"
             >
               Sign Up
             </button>

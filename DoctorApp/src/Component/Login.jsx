@@ -33,10 +33,10 @@ const Login = () => {
 
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-purple-700">
+    <div className="flex items-center justify-center min-h-screen bg-[#4AA8B570]">
       <div className="flex w-[900px] bg-white rounded-xl overflow-hidden shadow-lg">
         {/* Left Image */}
-        <div className="w-2/2 bg-purple-900 p-0 flex flex-col justify-end items-center relative">
+        <div className="w-2/2 bg-[#4AA8B5] p-0 flex flex-col justify-end items-center relative">
           <img src={Black} alt="Doctor" className="w-full h-auto" />
         </div>
 
@@ -46,10 +46,10 @@ const Login = () => {
           <p className="text-center text-gray-500">Solution for your problem!!</p>
           <br />
           <div>
-            <h1 className="text-xl font-semibold text-center text-purple-700"> Lets Start</h1>
+            <h1 className="text-xl font-semibold text-center text-[#4AA8B5]"> Lets Start</h1>
             <br />
             <Link to="/SignUp">
-            <button type = "signup" className="w-full py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700">
+            <button type = "signup" className="w-full py-2 rounded-lg bg-[#4AA8B5] text-white hover:bg-[#416e74]">
               SignUp
             </button>
             </Link>
@@ -107,12 +107,12 @@ const Login = () => {
               </label>
             </div>
 
-            <button type="submit" className="w-full py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700">
+            <button type="submit" className="w-full py-2 rounded-lg bg-[#4AA8B5] text-white hover:bg-[#416e74]">
               Login
             </button>
 
             <div className="text-center mt-3">
-              <a href="#" className="text-sm text-purple-600 hover:underline">
+              <a href="#" className="text-sm text-[#4AA8B5] hover:underline">
                 Forgot password? Help is on your way!!
               </a>
             </div>

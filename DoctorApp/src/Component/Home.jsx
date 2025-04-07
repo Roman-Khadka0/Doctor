@@ -43,30 +43,29 @@ function Landing() {
   }, []);
 
   return (
-    <div className="max-h-screen flex flex-col bg-black">
+    <div className="max-h-screen flex flex-col bg-[#258C9B]">
       {/* Navigation Bar */}
-      <header className="border-b py-4">
+      <header className="py-4">
         <div className="container mx-auto px-4 flex items-center justify-between">
           <div className="flex items-center">
             <div className="mr-10">
               <img src={Logo} alt="logo" className="h-15 w-15" />
             </div>
-            <nav className="hidden lg:flex space-x-10 text-xl ">
-            <NavItem text="Home" />
+            <nav className="hidden lg:flex space-x-10 text-xl">
+              <NavItem text="Home" />
               <NavItem text="Find Doctors" />
               <NavItem text="Consultation" />
               <NavItem text="Appointments" />
-
             </nav>
           </div>
           <div className="flex items-center space-x-4 text-lg">
             <Link to="Login">
-              <button className="flex items-center text-white font-semibold cursor-pointer hover:text-purple-500">
+              <button className="flex items-center text-white font-semibold cursor-pointer hover:text-gray-300">
                 <UserIcon className="w-4 h-4 mr-2" /> LOGIN
               </button>
             </Link>
             <Link to="/SignUp">
-              <button className="border border-purple-500 text-purple-500 px-4 py-2 rounded-lg text-lg cursor-pointer hover:text-white   hover:border-white">
+              <button className="border border-white text-white px-4 py-2 rounded-lg text-lg cursor-pointer hover:text-gray-300 hover:border-gray-300">
                 SIGN UP
               </button>
             </Link>
@@ -75,15 +74,15 @@ function Landing() {
       </header>
 
       {/* Hero Section */}
-      <section className="bg-purple-700 relative overflow-hidden">
+      <section className="bg-white relative overflow-hidden">
         <div className="container mx-auto px-4 py-20 md:py-28 flex flex-col md:flex-row items-center">
           {/* Text Section */}
           <div className="md:w-1/2 z-10 mb-10 md:mb-0 text-center md:text-left">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-8">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-black leading-tight mb-8">
               {slides[currentSlide].title}
             </h1>
             <Link to={slides[currentSlide].link}>
-              <button className="bg-white text-purple-700 px-8 py-4 rounded-lg text-xl flex items-center font-semibold hover:bg-gray-200 transition duration-300">
+              <button className="bg-white text-[#4AA8B570] px-8 py-4 rounded-lg text-xl flex items-center font-semibold hover:bg-gray-200 transition duration-300">
                 {slides[currentSlide].buttonText}
                 <ChevronRightIcon className="ml-3 w-6 h-6" />
               </button>
@@ -99,31 +98,13 @@ function Landing() {
             />
           </div>
         </div>
-
-        {/* Slide Navigation Buttons */}
-        <div className="absolute top-1/2 left-5 transform -translate-y-1/2">
-          <button
-            onClick={prevSlide}
-            className="bg-white text-purple-700 p-3 rounded-full shadow-lg hover:bg-purple-500 hover:text-2xl hover:text-white transition duration-300"
-          >
-            ❮
-          </button>
-        </div>
-        <div className="absolute top-1/2 right-5 transform -translate-y-1/2">
-          <button
-            onClick={nextSlide}
-            className="bg-white text-purple-700 p-3 rounded-full shadow-lg hover:bg-gray-300 transition duration-300 hover:bg-purple-500 hover:text-2xl hover:text-white  "
-          >
-            ❯
-          </button>
-        </div>
       </section>
     </div>
   );
 }
 
 const NavItem = ({ text }) => (
-  <a href="#" className="text-white hover:text-purple-500 font-semibold text-lg whitespace-nowrap">
+  <a href="#" className="text-white font-semibold text-lg whitespace-nowrap hover:text-gray-300">
     {text}
   </a>
 );
