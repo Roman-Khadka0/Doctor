@@ -77,7 +77,9 @@ function Landing() {
               <Link to="/dashboard">
                 <NavItem text="Doctors" />
               </Link>
+              <Link to="/appointment">
               <NavItem text="Appointments" />
+              </Link>
             </nav>
           </div>
           <div className="flex items-center space-x-4 text-lg">
