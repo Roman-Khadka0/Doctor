@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import Calendar from "./Calender";
 
-// // Image imports (update these based on your actual file structure)
 import Doctor1 from "../assets/Doctor1.jpg";
 import Doctor2 from "../assets/Doctor2.jpg";
-import Doctor3 from "../assets/Doctor3.jpg";
 import Doctor4 from "../assets/Doctor4.jpg";
+import Dope from "../assets/Dope.jpg"
 
 const doctors = [
   {
@@ -27,7 +27,7 @@ const doctors = [
     specialty: "Pediatrician",
     hospital: "Riverside Wellness Hospital",
     rating: 4.5,
-    image: Doctor3,
+    image: Dope,
   },
 ];
 
@@ -69,13 +69,13 @@ const Dashboard = () => {
       {/* Welcome */}
       <div className="p-6 text-xl font-semibold">Welcome! Aayush Silwal</div>
 
-      {/* Upcoming Appointments */}
+      {/* Upcoming Appointments with Calendar */}
       <section className="p-6">
-        <h2 className="text-lg font-bold">Upcoming Appointments</h2>
-        <div className="flex space-x-4 mt-2">
-          <input type="text" className="border p-2 w-1/3" placeholder="Date" />
-          <input type="text" className="border p-2 w-1/3" placeholder="Doctor" />
-          <input type="text" className="border p-2 w-1/3" placeholder="Notes" />
+        <h2 className="text-lg font-bold mb-4">Upcoming Appointments</h2>
+
+        {/* Calendar component injected here */}
+        <div className="bg-white p-4 rounded-lg shadow-lg">
+          <Calendar />
         </div>
       </section>
 
@@ -110,7 +110,7 @@ const Dashboard = () => {
                 <p className="text-sm text-gray-600">{doctor.specialty}</p>
                 <p className="text-sm font-bold">{doctor.hospital}</p>
                 <p className="text-yellow-500">⭐ {doctor.rating}</p>
-              </div>
+                </div>  
               <button
                 onClick={() => toggleFavorite(index)}
                 className="ml-auto text-2xl focus:outline-none"
