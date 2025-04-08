@@ -12,20 +12,20 @@ function Landing() {
     {
       image: Cdoctor,
       title: "Keep yourself and your family healthy",
-      buttonText: "Consult Now",
-      link: "/consultation",
+      buttonText: "Book Appointment",
+      link: "/appointment",
     },
     {
       image: Appointment,
       title: "Get expert consultations from professionals",
       buttonText: "Book Appointment",
-      link: "/appointments",
+      link: "/appointment",
     },
     {
       image: Variety,
       title: "Access a variety of health services",
-      buttonText: "Explore Services",
-      link: "/services",
+      buttonText: "Book Appointment",
+      link: "/appointment",
     },
   ];
 

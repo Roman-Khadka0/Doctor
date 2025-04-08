@@ -92,7 +92,7 @@ export default function Appointment() {
             </label>
             <input
               type="text"
-              name="name"
+          name="name"
               value={formData.name}
               onChange={handleChange}
               required
