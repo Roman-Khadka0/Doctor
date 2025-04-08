@@ -4,6 +4,7 @@ import Login from "./Component/Login";
 import SignUp from "./Component/SignUp";
 import Home from "./Component/Home";
 import Dashboard from "./Component/Dashboard";
+import Appointment from "./Component/Appointment";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -33,6 +34,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/appointment" element={<Appointment />} />
       </Routes>
       <p>Backend Message: {message}</p>
     </Router>

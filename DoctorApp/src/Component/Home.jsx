@@ -33,18 +33,39 @@ function Landing() {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
   };
 
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
-  };
-
   useEffect(() => {
     const interval = setInterval(nextSlide, 7000);
     return () => clearInterval(interval);
   }, []);
 
+  const features = [
+    {
+      title: "SIMPLIFIES SCHEDULING",
+      description:
+        "With BOOKNMEET, scheduling occurs in one well organised platform...",
+      icon: "/icons/scheduling.svg",
+    },
+    {
+      title: "POWERFUL.PERSONAL.ORGANISE",
+      description:
+        "BOOKNMEET offers a wide selection of online solutions...",
+      icon: "/icons/organise.svg",
+    },
+    {
+      title: "BOOKNMEET QMM-TOKEN",
+      description:
+        "Improve outpatient (OP) flow at Hospitals & clinics with BOOKNMEET's QMM...",
+      icon: "/icons/qmm-token.svg",
+    },
+  ];
+
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    // Add newsletter subscription logic here
+  };
+
   return (
-    <div className="max-h-screen flex flex-col bg-[#258C9B]">
-      {/* Navigation Bar */}
+    <div className="flex flex-col bg-[#258C9B]">
       <header className="py-4">
         <div className="container mx-auto px-4 flex items-center justify-between">
           <div className="flex items-center">
@@ -53,19 +74,20 @@ function Landing() {
             </div>
             <nav className="hidden lg:flex space-x-10 text-xl">
               <NavItem text="Home" />
-              <NavItem text="Find Doctors" />
-              <NavItem text="Consultation" />
+              <Link to="/dashboard">
+                <NavItem text="Doctors" />
+              </Link>
               <NavItem text="Appointments" />
             </nav>
           </div>
           <div className="flex items-center space-x-4 text-lg">
-            <Link to="Login">
-              <button className="flex items-center text-white font-semibold cursor-pointer hover:text-gray-300">
+            <Link to="/Login">
+              <button className="flex items-center text-white font-semibold hover:text-gray-300">
                 <UserIcon className="w-4 h-4 mr-2" /> LOGIN
               </button>
             </Link>
             <Link to="/SignUp">
-              <button className="border border-white text-white px-4 py-2 rounded-lg text-lg cursor-pointer hover:text-gray-300 hover:border-gray-300">
+              <button className="border border-white text-white px-4 py-2 rounded-lg hover:text-gray-300 hover:border-gray-300">
                 SIGN UP
               </button>
             </Link>
@@ -73,23 +95,19 @@ function Landing() {
         </div>
       </header>
 
-      {/* Hero Section */}
       <section className="bg-white relative overflow-hidden">
         <div className="container mx-auto px-4 py-20 md:py-28 flex flex-col md:flex-row items-center">
-          {/* Text Section */}
           <div className="md:w-1/2 z-10 mb-10 md:mb-0 text-center md:text-left">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-black leading-tight mb-8">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-black mb-8">
               {slides[currentSlide].title}
             </h1>
             <Link to={slides[currentSlide].link}>
-              <button className="bg-white text-[#4AA8B570] px-8 py-4 rounded-lg text-xl flex items-center font-semibold hover:bg-gray-200 transition duration-300">
+              <button className="bg-white text-[#4AA8B570] hover:text-[#258C9B] px-8 py-4 rounded-lg text-xl flex items-center font-semibold hover:bg-gray-200 transition duration-300">
                 {slides[currentSlide].buttonText}
                 <ChevronRightIcon className="ml-3 w-6 h-6" />
               </button>
             </Link>
           </div>
-
-          {/* Image Section */}
           <div className="md:w-1/2 relative">
             <img
               src={slides[currentSlide].image}
@@ -99,12 +117,124 @@ function Landing() {
           </div>
         </div>
       </section>
+
+      {/* UPDATED FEATURES SECTION */}
+      <section className="bg-gray-100 py-20 px-6">
+        <div className="max-w-7xl mx-auto text-center">
+          <h2 className="text-3xl font-bold text-gray-800">
+            WHY CHOOSE EASYDOC
+          </h2>
+          <p className="mt-4 text-[#258C9B] text-lg">
+            Online Appointment, Phone-in Appointment, Walk-in Appointment with Token
+          </p>
+
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-10">
+            {features.map((feature, index) => (
+              <div
+                key={index}
+                className="bg-white p-8 rounded-2xl shadow-lg transition duration-300 hover:scale-[1.02] transform"
+              >
+                <div className="flex justify-center">
+                  <img
+                    src={feature.icon}
+                    alt={feature.title}
+                    className="h-24 mb-6"
+                  />
+                </div>
+                <h3 className="text-[#258C9B] font-semibold text-xl mb-4">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-700 text-base text-justify">
+                  {feature.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <footer className="bg-[#258C9B] text-gray-700 py-12 px-6 md:px-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <div>
+            <img src={Logo} alt="Logo" className="h-10 mb-4" />
+            <p className="mb-4 text-sm text-white font-medium">
+              ONLINE APPOINTMENT SCHEDULING PLATFORM
+            </p>
+            <p className="text-sm mb-1 text-white">📍 herald Kathmandu, Naxal</p>
+            <p className="text-sm mb-1 text-white">📞 +977 9811203806</p>
+            <p className="text-sm mb-4 text-white">📧 post@easydoc.com</p>
+
+            <p className="mb-2 font-medium text-white">FOLLOW US</p>
+
+            <a href="#">
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
+                alt="Google Play"
+                className="h-10"
+              />
+            </a>
+          </div>
+
+          <div>
+            <ul className="space-y-2 text-sm text-white">
+              <li>Clinical Procedure Scheduling</li>
+              <li>Vaccination</li>
+              <li>Nutrition Practice</li>
+              <li>Compare Plans</li>
+              <li>Terms of Use</li>
+              <li>Privacy Policy</li>
+              <li>Personal Information Policy</li>
+              <li>Video Consultation Policy</li>
+              <li>Trade Mark Notice</li>
+              <li>FAQ</li>
+              <li>Special Offer</li>
+            </ul>
+
+            <form onSubmit={handleSubscribe} className="mt-6">
+              <p className="text-sm mb-2 font-medium text-white">
+                Subscribe to EasyDoc:
+              </p>
+              <input
+                type="email"
+                placeholder="Email"
+                className="border border-white text-white px-4 py-2 rounded w-full mb-2"
+                required
+              />
+              <button type="submit" className="bg-sky-500 text-white px-4 py-2 rounded">
+                Submit
+              </button>
+            </form>
+          </div>
+
+          <div>
+            <div className="flex flex-wrap gap-2 mb-4">
+              <button className="bg-sky-500 text-white px-3 py-1 rounded text-sm">
+                Request EasyDoc Demo
+              </button>
+              <button className="bg-sky-500 text-white px-3 py-1 rounded text-sm">
+                Career@EasyDoc
+              </button>
+              <button className="bg-sky-500 text-white px-3 py-1 rounded text-sm">
+                WEBSTORIES
+              </button>
+            </div>
+            <p className="text-sm text-white font-semibold mb-2">
+              YOUR GUARANTEED MOBILE ONLINE APPOINTMENT
+            </p>
+            <p className="text-sm text-white">
+              With EasyDoc productivity tool, be successful in avoiding unscheduled
+              absences. Let our tool support you to be a leader in your medical
+              practice.
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
 
 const NavItem = ({ text }) => (
-  <a href="#" className="text-white font-semibold text-lg whitespace-nowrap hover:text-gray-300">
+  <a href="#" className="text-white font-semibold text-lg hover:text-gray-300">
     {text}
   </a>
 );
