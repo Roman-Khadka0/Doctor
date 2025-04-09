@@ -12,7 +12,7 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log({ email, password, rememberMe });
-    fetch("http://localhost:5000/login",{
+    fetch("http://localhost:5000/api/auth/login",{
       method: "POST",
       crossDomain: true,
       headers: {
