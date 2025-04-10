@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
 
 require("dotenv").config(); // to use environment variables
 
@@ -53,11 +53,67 @@ const getUser = async (req, res) => {
     const decoded = jwt.verify(token, JWT_SECRET);
     const userid = decoded.id;
     const user = await User.findById(userid); 
-    res.send({ status: "ok", data: user });
+    return res.json({ status: "ok", data: user });
   } catch (error) {
     res.status(401).json({ error: "Siuu" });
   }
 };
 
+
+// Forgot Password Controller
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Generate a reset token
+    const resetToken = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "15m" });
+
+    // Send the reset token via email
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: email,
+      subject: "Password Reset Request",
+      html: `<p>You requested a password reset. Click the link below to reset your password:</p>
+             <a href="http://localhost:5173/resetPassword/${resetToken}">Reset Password</a>`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.json({ status: "ok", message: "Password reset email sent" });
+  } catch (error) {
+    res.status(500).json({ error: "Something went wrong" });
+  }
+};
+
+// Reset Password Controller
+const resetPassword = async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET); // Verify the reset token
+    const encryptedPassword = await bcrypt.hash(newPassword, 10);
+
+    await User.findByIdAndUpdate(decoded.id, { password: encryptedPassword });
+
+    res.json({ status: "ok", message: "Password reset successful" });
+  } catch (error) {
+    res.status(400).json({ error: "Invalid or expired token" });
+  }
+};
+
 // Exporting the controllers
-module.exports = { signup, login, getUser };
+module.exports = { signup, login, getUser, resetPassword, forgotPassword };

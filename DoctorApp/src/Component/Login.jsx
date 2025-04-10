@@ -117,7 +117,7 @@ const Login = () => {
             </button>
 
             <div className="text-center mt-3">
-              <a href="#" className="text-sm text-[#4AA8B5] hover:underline">
+              <a href="/ForgotPassword" className="text-sm text-[#4AA8B5] hover:underline">
                 Forgot password? Help is on your way!!
               </a>
             </div>

@@ -5,6 +5,8 @@ import SignUp from "./Component/SignUp";
 import Home from "./Component/Home";
 import Dashboard from "./Component/Dashboard";
 import Appointment from "./Component/Appointment";
+import ForgotPassword from "./Component/ForgotPassword";
+import ResetPassword from "./Component/ResetPassword";
 
 function App() {
   const [message, setMessage] = useState("");
@@ -35,6 +37,8 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/appointment" element={<Appointment />} />
+        <Route path="/forgotPassword" element={<ForgotPassword />} />
+        <Route path="/resetPassword/:token" element={<ResetPassword />} />
       </Routes>
     </Router>
   );
