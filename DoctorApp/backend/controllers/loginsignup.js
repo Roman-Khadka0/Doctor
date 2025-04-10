@@ -38,7 +38,7 @@ const login = async (req, res) => {
     return res.json({ error: "User Not Found" });
   }
   if (await bcrypt.compare(password, user.password)) {
-    // Include user data (e.g., email or id) in the token payload
+    // Included user data in the token payload
     const token = jwt.sign({ email: user.email, id: user._id }, JWT_SECRET, { expiresIn: "5h" });
 
     return res.json({ status: "ok", data: token });
@@ -46,5 +46,18 @@ const login = async (req, res) => {
   res.json({ status: "error", error: "Invalid Password" });
 };
 
+// Retrieving user data from token
+const getUser = async (req, res) => {
+  const token = req.body.token; // Extract token from request body;
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const userid = decoded.id;
+    const user = await User.findById(userid); 
+    res.send({ status: "ok", data: user });
+  } catch (error) {
+    res.status(401).json({ error: "Siuu" });
+  }
+};
+
 // Exporting the controllers
-module.exports = { signup, login };
+module.exports = { signup, login, getUser };

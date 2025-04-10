@@ -33,6 +33,7 @@ const SignUp = () => {
     })
     .then((res) => res.json())
     .then((data) => {
+      window.location.href = "/login"; // Redirect to login page after successful signup
       console.log(data, "userRegister")
     })
   };

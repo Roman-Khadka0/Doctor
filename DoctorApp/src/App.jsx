@@ -36,7 +36,6 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/appointment" element={<Appointment />} />
       </Routes>
-      <p>Backend Message: {message}</p>
     </Router>
   );
 }

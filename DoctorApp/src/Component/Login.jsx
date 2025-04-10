@@ -27,7 +27,12 @@ const Login = () => {
     })
     .then((res) => res.json())
     .then((data) => {
-      console.log(data, "userRegister")
+      if (data.status === "ok") {
+        localStorage.setItem("token", data.data); // Store token in local storage
+        window.location.href = "/dashboard"; // Redirect to dashboard
+      } else {
+        alert(data.error);
+      }
     })
   };
 

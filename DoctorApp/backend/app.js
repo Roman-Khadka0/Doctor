@@ -1,7 +1,5 @@
 const cors = require("cors"); // to connect frontend with backend at any origin
 const express = require("express"); // to handle requests
-
-const jwt = require("jsonwebtoken"); // to handle autentication
 const mongoose = require("mongoose"); // to connect to mongodb
 
 const logsignroutes = require("./routes/loginsignuproute"); // importing the routes for login and signup
