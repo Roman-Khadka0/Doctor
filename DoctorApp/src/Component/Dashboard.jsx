@@ -93,8 +93,8 @@ const Dashboard = () => {
         <div className="text-2xl font-bold">EASY DOC</div>
         <div className="space-x-6">
           <Link to="/" className="hover:text-gray-300">HOME</Link>
-          <Link to="/doctors" className="hover:text-gray-300">DOCTORS</Link>
-          <Link to="/appointments" className="hover:text-gray-300">APPOINTMENTS</Link>
+          <Link to="/dashboard" className="hover:text-gray-300">DOCTORS</Link>
+          <Link to="/appointment" className="hover:text-gray-300">APPOINTMENTS</Link>
         </div>
         <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
       </nav>

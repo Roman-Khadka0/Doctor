@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Background from "../assets/background.png";
 
 const doctors = [
   { id: 1, name: "Dr. Aayush Sharma", specialty: "Cardiologist" },
@@ -31,8 +32,11 @@ export default function Appointment() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-12">
-      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl">
+    <div
+      className="min-h-screen flex items-center justify-center px-4 py-12 bg-cover bg-center"
+      style={{ backgroundImage: `url(${Background})` }}
+    >
+      <div className="bg-white bg-opacity-90 p-8 rounded-2xl shadow-xl w-full max-w-2xl">
         <h1 className="text-3xl font-bold text-center text-[#258C9B] mb-6">
           Book a Doctor Appointment
         </h1>
@@ -96,7 +100,7 @@ export default function Appointment() {
               value={formData.name}
               onChange={handleChange}
               required
-              placeholder="Roman khadka"
+              placeholder="Roman Khadka"
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#258C9B]"
             />
           </div>

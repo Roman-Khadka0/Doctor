@@ -4,6 +4,10 @@ import Logo from "../assets/Logo.png";
 import Cdoctor from "../assets/Cdoctor.jpg";
 import Appointment from "../assets/Appointment.jpg";
 import Variety from "../assets/Variety.jpg";
+import Background from "../assets/background.png";
+import Power from "../assets/power.jpg";
+import Schedule from "../assets/schedule.jpg";
+import Booking from "../assets/booking.jpg";
 
 function Landing() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -12,20 +16,20 @@ function Landing() {
     {
       image: Cdoctor,
       title: "Keep yourself and your family healthy",
-      buttonText: "Consult Now",
-      link: "/consultation",
+      buttonText: "Book Appointment",
+      link: "/appointment",
     },
     {
       image: Appointment,
       title: "Get expert consultations from professionals",
       buttonText: "Book Appointment",
-      link: "/appointments",
+      link: "/appointment",
     },
     {
       image: Variety,
       title: "Access a variety of health services",
-      buttonText: "Explore Services",
-      link: "/services",
+      buttonText: "Book Appointment",
+      link: "/appointment",
     },
   ];
 
@@ -43,19 +47,19 @@ function Landing() {
       title: "SIMPLIFIES SCHEDULING",
       description:
         "With BOOKNMEET, scheduling occurs in one well organised platform...",
-      icon: "/icons/scheduling.svg",
+      image: Schedule,
     },
     {
       title: "POWERFUL.PERSONAL.ORGANISE",
       description:
         "BOOKNMEET offers a wide selection of online solutions...",
-      icon: "/icons/organise.svg",
+      image: Power,
     },
     {
       title: "BOOKNMEET QMM-TOKEN",
       description:
         "Improve outpatient (OP) flow at Hospitals & clinics with BOOKNMEET's QMM...",
-      icon: "/icons/qmm-token.svg",
+      image: Booking,
     },
   ];
 
@@ -77,7 +81,9 @@ function Landing() {
               <Link to="/dashboard">
                 <NavItem text="Doctors" />
               </Link>
-              <NavItem text="Appointments" />
+              <Link to="/appointment">
+                <NavItem text="Appointments" />
+              </Link>
             </nav>
           </div>
           <div className="flex items-center space-x-4 text-lg">
@@ -95,14 +101,19 @@ function Landing() {
         </div>
       </header>
 
-      <section className="bg-white relative overflow-hidden">
-        <div className="container mx-auto px-4 py-20 md:py-28 flex flex-col md:flex-row items-center">
-          <div className="md:w-1/2 z-10 mb-10 md:mb-0 text-center md:text-left">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-black mb-8">
+      {/* HERO SECTION */}
+      <section
+        className="relative bg-cover bg-center min-h-[80vh] flex items-center justify-center"
+        style={{ backgroundImage: `url(${Background})` }}
+      >
+        <div className="absolute inset-0 bg-black/0 z-0" />
+        <div className="container mx-auto px-4 py-20 md:py-28 flex flex-col md:flex-row items-center relative z-10">
+          <div className="md:w-1/2 mb-10 md:mb-0 text-center md:text-left text-[#4AA8B5] ">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8">
               {slides[currentSlide].title}
             </h1>
             <Link to={slides[currentSlide].link}>
-              <button className="bg-white text-[#4AA8B570] hover:text-[#258C9B] px-8 py-4 rounded-lg text-xl flex items-center font-semibold hover:bg-gray-200 transition duration-300">
+              <button className="bg-white text-[#4AA8B5] hover:text-white px-8 py-4 rounded-lg text-xl flex items-center font-semibold hover:bg-[#4AA8B5] transition duration-300">
                 {slides[currentSlide].buttonText}
                 <ChevronRightIcon className="ml-3 w-6 h-6" />
               </button>
@@ -118,7 +129,7 @@ function Landing() {
         </div>
       </section>
 
-      {/* UPDATED FEATURES SECTION */}
+      {/* FEATURES SECTION */}
       <section className="bg-gray-100 py-20 px-6">
         <div className="max-w-7xl mx-auto text-center">
           <h2 className="text-3xl font-bold text-gray-800">
@@ -136,9 +147,9 @@ function Landing() {
               >
                 <div className="flex justify-center">
                   <img
-                    src={feature.icon}
+                    src={feature.image} // ✅ Fixed line
                     alt={feature.title}
-                    className="h-24 mb-6"
+                    className="h-24 mb-6 object-contain"
                   />
                 </div>
                 <h3 className="text-[#258C9B] font-semibold text-xl mb-4">
@@ -153,6 +164,7 @@ function Landing() {
         </div>
       </section>
 
+      {/* FOOTER SECTION */}
       <footer className="bg-[#258C9B] text-gray-700 py-12 px-6 md:px-20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           <div>
@@ -165,7 +177,6 @@ function Landing() {
             <p className="text-sm mb-4 text-white">📧 post@easydoc.com</p>
 
             <p className="mb-2 font-medium text-white">FOLLOW US</p>
-
             <a href="#">
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
@@ -197,7 +208,7 @@ function Landing() {
               <input
                 type="email"
                 placeholder="Email"
-                className="border border-white text-white px-4 py-2 rounded w-full mb-2"
+                className="border border-white text-white px-4 py-2 rounded w-full mb-2 bg-transparent"
                 required
               />
               <button type="submit" className="bg-sky-500 text-white px-4 py-2 rounded">
@@ -233,12 +244,14 @@ function Landing() {
   );
 }
 
+// NavItem Component
 const NavItem = ({ text }) => (
   <a href="#" className="text-white font-semibold text-lg hover:text-gray-300">
     {text}
   </a>
 );
 
+// User Icon
 const UserIcon = ({ className }) => (
   <svg
     className={className}
@@ -255,6 +268,7 @@ const UserIcon = ({ className }) => (
   </svg>
 );
 
+// Chevron Icon
 const ChevronRightIcon = ({ className }) => (
   <svg
     className={className}
