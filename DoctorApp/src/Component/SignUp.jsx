@@ -17,7 +17,7 @@ const SignUp = () => {
       return;
     }
     console.log({ name, email, password });
-    fetch("http://localhost:5000/signup",{
+    fetch("http://localhost:5000/api/auth/signup",{
       method: "POST",
       crossDomain: true,
       headers: {
@@ -33,6 +33,7 @@ const SignUp = () => {
     })
     .then((res) => res.json())
     .then((data) => {
+      window.location.href = "/login"; // Redirect to login page after successful signup
       console.log(data, "userRegister")
     })
   };

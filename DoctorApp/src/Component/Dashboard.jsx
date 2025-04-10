@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Calendar from "./Calender";
 
@@ -43,6 +43,39 @@ const initialFavorites = [
 ];
 
 const Dashboard = () => {
+    const [user, setUser] = useState(null); // State to store user data
+  
+    useEffect(() => {
+      const fetchUserData = async () => {
+        const token = localStorage.getItem("token"); // Retrieve token from local storage
+        if (!token) {
+          console.error("No token found");
+          return;
+        }
+  
+        try {
+          const response = await fetch("http://localhost:5000/api/auth/getUser", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ token }),
+          });
+  
+          const data = await response.json();
+          if (data.status === "ok") {
+            setUser(data.data); // Set user data in state
+          } else {
+            console.error("Failed to fetch user data:", data.error);
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      };
+  
+      fetchUserData();
+    }, []);
+
   const [favorites, setFavorites] = useState(initialFavorites);
 
   const toggleFavorite = (index) => {
@@ -67,7 +100,7 @@ const Dashboard = () => {
       </nav>
 
       {/* Welcome */}
-      <div className="p-6 text-xl font-semibold">Welcome! Aayush Silwal</div>
+      <div className="p-6 text-xl font-semibold">Welcome! {user ? user.name : "Loading..."}</div>
 
       {/* Upcoming Appointments with Calendar */}
       <section className="p-6">

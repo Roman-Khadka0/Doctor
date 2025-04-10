@@ -12,7 +12,7 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log({ email, password, rememberMe });
-    fetch("http://localhost:5000/login",{
+    fetch("http://localhost:5000/api/auth/login",{
       method: "POST",
       crossDomain: true,
       headers: {
@@ -27,7 +27,12 @@ const Login = () => {
     })
     .then((res) => res.json())
     .then((data) => {
-      console.log(data, "userRegister")
+      if (data.status === "ok") {
+        localStorage.setItem("token", data.data); // Store token in local storage
+        window.location.href = "/dashboard"; // Redirect to dashboard
+      } else {
+        alert(data.error);
+      }
     })
   };
 

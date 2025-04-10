@@ -38,7 +38,6 @@ function App() {
         <Route path="/appointment" element={<Appointment />} />
         <Route path="/PProfile" element={<PProfile />} />
       </Routes>
-      <p>Backend Message: {message}</p>
     </Router>
   );
 }
