@@ -5,6 +5,8 @@ import SignUp from "./Component/SignUp";
 import Home from "./Component/Home";
 import Dashboard from "./Component/Dashboard";
 import Appointment from "./Component/Appointment";
+import ForgotPassword from "./Component/ForgotPassword";
+import ResetPassword from "./Component/ResetPassword";
 import PProfile from "./Component/PProfile";
 
 function App() {
@@ -36,6 +38,8 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/appointment" element={<Appointment />} />
+        <Route path="/forgotPassword" element={<ForgotPassword />} />
+        <Route path="/resetPassword/:token" element={<ResetPassword />} />
         <Route path="/PProfile" element={<PProfile />} />
       </Routes>
     </Router>
