@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import {  Lock, Mail } from "lucide-react";
 import Black from "../assets/Black.png";
 import { Link } from "react-router-dom";
+import { jwtDecode } from 'jwt-decode'
 
 
 const Login = () => {
@@ -29,7 +30,14 @@ const Login = () => {
     .then((data) => {
       if (data.status === "ok") {
         localStorage.setItem("token", data.data); // Store token in local storage
-        window.location.href = "/dashboard"; // Redirect to dashboard
+
+        // Decode the token to get the user's role
+        const decoded = jwtDecode(data.data);
+        if (decoded.role === "admin") {
+          window.location.href = "/admin"; // Redirect to admin dashboard
+        } else {
+          window.location.href = "/dashboard"; // Redirect to user dashboard
+        }
       } else {
         alert(data.error);
       }
