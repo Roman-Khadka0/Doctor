@@ -69,6 +69,7 @@ function Landing() {
   };
 
   return (
+    
     <div className="flex flex-col bg-[#258C9B]">
       <header className="py-4">
         <div className="container mx-auto px-4 flex items-center justify-between">

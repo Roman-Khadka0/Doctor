@@ -1,5 +1,7 @@
 import { useState } from "react";
 import Background from "../assets/background.png";
+import { Link } from "react-router-dom";
+import Logo from "../assets/logo.png";
 
 const doctors = [
   { id: 1, name: "Dr. Aayush Sharma", specialty: "Cardiologist" },
@@ -36,6 +38,21 @@ export default function Appointment() {
       className="min-h-screen flex items-center justify-center px-4 py-12 bg-cover bg-center"
       style={{ backgroundImage: `url(${Background})` }}
     >
+      <header className="py-4 w-full absolute top-0 left-0 bg-[#258C9B]">
+  <div className="container mx-auto px-4 flex-center items-center justify-between">
+    <div className="flex items-center">
+      <div className="mr-10">
+        <img src={Logo} alt="logo" className="h-12 w-12" />
+      </div>
+      <nav className="hidden lg:flex space-x-10 text-xl">
+  <Link to="/" className="text-white hover:text-gray-300 font-semibold">Home</Link>
+  <Link to="/dashboard" className="text-white hover:text-gray-300 font-semibold">Doctors</Link>
+  <Link to="/appointment" className="text-white hover:text-gray-300 font-semibold">Appointments</Link>
+</nav>
+
+    </div>
+  </div>
+</header>
       <div className="bg-white bg-opacity-90 p-8 rounded-2xl shadow-xl w-full max-w-2xl">
         <h1 className="text-3xl font-bold text-center text-[#258C9B] mb-6">
           Book a Doctor Appointment

@@ -1,4 +1,10 @@
 import { useState } from "react";
+import Background from "../assets/background.png";
+import Logo from "../assets/logo.png";
+import { Link } from "react-router-dom";
+import { UserIcon } from "@heroicons/react/24/solid"; // Assuming you're using Heroicons
+
+
 
 export default function PatientProfile() {
   const [isEditing, setIsEditing] = useState(false);
@@ -6,7 +12,7 @@ export default function PatientProfile() {
     name: "Roman",
     email: "Roman@gmail.com",
     phone: "+977 9812345678",
-    gender: "Sexy Male",
+    gender: "Male",
     dob: "1990-01-01",
     address: "Kathmandu, Nepal",
   });
@@ -25,8 +31,32 @@ export default function PatientProfile() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4 py-10">
-      <div className="bg-white rounded-2xl shadow-lg w-full max-w-3xl p-6 md:p-10">
+    <div
+      className="min-h-screen flex items-center justify-center px-4 py-10 "
+      style={{
+        backgroundImage: `url(${Background})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
+      <header className="py-4 w-full absolute top-0 left-0 bg-[#258C9B]">
+  <div className="container mx-auto px-4 flex-center items-center justify-between">
+    <div className="flex items-center">
+      <div className="mr-10">
+        <img src={Logo} alt="logo" className="h-12 w-12" />
+      </div>
+      <nav className="hidden lg:flex space-x-10 text-xl">
+  <Link to="/" className="text-white hover:text-gray-300 font-semibold">Home</Link>
+  <Link to="/dashboard" className="text-white hover:text-gray-300 font-semibold">Doctors</Link>
+  <Link to="/appointment" className="text-white hover:text-gray-300 font-semibold">Appointments</Link>
+</nav>
+
+    </div>
+  </div>
+</header>
+
+      <div className="bg-white bg-opacity-90 rounded-2xl shadow-lg w-full max-w-3xl p-6 md:p-10">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl md:text-3xl font-bold text-[#258C9B]">
             Patient Profile
