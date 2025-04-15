@@ -57,6 +57,7 @@ export default function Appointment() {
         email: "",
         reason: "",
       });
+      window.location.href = "/dashboard"; // Redirect to dashboard after booking
     } else {
       alert(data.error);
     }
