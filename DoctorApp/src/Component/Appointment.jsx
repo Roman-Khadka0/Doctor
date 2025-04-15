@@ -24,11 +24,45 @@ export default function Appointment() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Appointment Data:", formData);
-    alert("Appointment submitted!");
+
     // Add your API call or navigation logic here
+    const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Please log in to book an appointment.");
+    window.location.href = "/login"; // Redirect to login page if no token is found
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:5000/api/appointments/book", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token,
+      },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await response.json();
+    if (data.status === "ok") {
+      alert("Appointment booked successfully!");
+      setFormData({
+        doctor: "",
+        date: "",
+        time: "",
+        name: "",
+        email: "",
+        reason: "",
+      });
+    } else {
+      alert(data.error);
+    }
+  } catch (error) {
+    console.error("Error booking appointment:", error);
+  }
   };
 
   return (

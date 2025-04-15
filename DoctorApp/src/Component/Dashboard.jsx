@@ -44,12 +44,15 @@ const initialFavorites = [
 
 const Dashboard = () => {
     const [user, setUser] = useState(null); // State to store user data
+    const [appointments, setAppointments] = useState([]);
   
     useEffect(() => {
+      // Fetch user data when the component mounts
       const fetchUserData = async () => {
         const token = localStorage.getItem("token"); // Retrieve token from local storage
         if (!token) {
           console.error("No token found");
+          window.location.href = "/login"; // Redirect to login if no token is found
           return;
         }
   
@@ -74,6 +77,38 @@ const Dashboard = () => {
       };
   
       fetchUserData();
+
+      // Fetch appointments for the logged-in user
+      const fetchAppointments = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.error("No token found");
+          window.location.href = "/login"; // Redirect to login if no token is found
+          return;
+        }
+    
+        try {
+          const response = await fetch("http://localhost:5000/api/appointments/user", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: token,
+            },
+          });
+    
+          const data = await response.json();
+          if (data.status === "ok") {
+            console.log(data.data);
+            setAppointments(data.data); // Set appointments data in state
+          } else {
+            console.error("Failed to fetch appointments:", data.error);
+          }
+        } catch (error) {
+          console.error("Error fetching appointments:", error);
+        }
+      };
+    
+      fetchAppointments();
     }, []);
 
   const [favorites, setFavorites] = useState(initialFavorites);
