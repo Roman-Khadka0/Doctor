@@ -39,7 +39,7 @@ const login = async (req, res) => {
   }
   if (await bcrypt.compare(password, user.password)) {
     // Included user data in the token payload
-    const token = jwt.sign({ email: user.email, id: user._id }, JWT_SECRET, { expiresIn: "5h" });
+    const token = jwt.sign({ email: user.email, id: user._id, role: user.role }, JWT_SECRET, { expiresIn: "5h" });
 
     return res.json({ status: "ok", data: token });
   }
