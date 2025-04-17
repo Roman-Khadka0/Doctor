@@ -45,6 +45,7 @@ const Dashboard = () => {
   const [user, setUser] = useState(null);
   const [appointments, setAppointments] = useState([]);
   const [favorites, setFavorites] = useState(initialFavorites);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -115,6 +116,11 @@ const Dashboard = () => {
     );
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/login";
+  };
+
   return (
     <div className="bg-gray-100 min-h-screen">
       {/* Navbar */}
@@ -125,7 +131,28 @@ const Dashboard = () => {
           <Link to="/dashboard" className="hover:text-gray-300">DOCTORS</Link>
           <Link to="/appointment" className="hover:text-gray-300">APPOINTMENTS</Link>
         </div>
-        <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
+        <div className="relative">
+          <button
+            onClick={() => setShowDropdown(!showDropdown)}
+            className="w-10 h-10 rounded-full overflow-hidden border-2 border-white focus:outline-none"
+          >
+            <img
+              src="https://i.pravatar.cc/300" // Replace with user's profile image if available
+              alt="User avatar"
+              className="w-full h-full object-cover"
+            />
+          </button>
+          {showDropdown && (
+            <div className="absolute right-0 mt-2 w-32 bg-white rounded-md shadow-lg z-10">
+              <button
+                onClick={handleLogout}
+                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
       </nav>
 
       {/* Welcome */}
@@ -133,51 +160,50 @@ const Dashboard = () => {
 
       {/* Upcoming Appointments */}
       <section className="p-6">
-  <h2 className="text-xl font-bold mb-4 text-gray-800">🗓️ Upcoming Appointments</h2>
-  {appointments.length === 0 ? (
-    <p className="text-gray-600">No upcoming appointments found.</p>
-  ) : (
-    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {appointments.map((appointment) => (
-        <div
-          key={appointment._id}
-          className="bg-white border border-gray-200 rounded-2xl shadow-lg p-5 transition transform hover:scale-[1.02]"
-        >
-          <div className="flex items-center mb-3">
-            <div className="bg-blue-100 p-3 rounded-full text-blue-600 mr-3">
-              🩺
-            </div>
-            <h3 className="font-semibold text-lg text-gray-800">
-              Dr. {appointment.doctor}
-            </h3>
+        <h2 className="text-xl font-bold mb-4 text-gray-800">🗓️ Upcoming Appointments</h2>
+        {appointments.length === 0 ? (
+          <p className="text-gray-600">No upcoming appointments found.</p>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {appointments.map((appointment) => (
+              <div
+                key={appointment._id}
+                className="bg-white border border-gray-200 rounded-2xl shadow-lg p-5 transition transform hover:scale-[1.02]"
+              >
+                <div className="flex items-center mb-3">
+                  <div className="bg-blue-100 p-3 rounded-full text-blue-600 mr-3">
+                    🩺
+                  </div>
+                  <h3 className="font-semibold text-lg text-gray-800">
+                    Dr. {appointment.doctor}
+                  </h3>
+                </div>
+                <div className="space-y-2 text-sm text-gray-700">
+                  <div className="flex items-center">
+                    <span className="mr-2 text-blue-500">📅</span>
+                    <span>
+                      <strong>Date:</strong>{" "}
+                      {new Date(appointment.date).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <div className="flex items-center">
+                    <span className="mr-2 text-green-500">⏰</span>
+                    <span>
+                      <strong>Time:</strong> {appointment.time}
+                    </span>
+                  </div>
+                  <div className="flex items-start">
+                    <span className="mr-2 text-red-400">📝</span>
+                    <span>
+                      <strong>Reason:</strong> {appointment.reason}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-          <div className="space-y-2 text-sm text-gray-700">
-            <div className="flex items-center">
-              <span className="mr-2 text-blue-500">📅</span>
-              <span>
-                <strong>Date:</strong>{" "}
-                {new Date(appointment.date).toLocaleDateString()}
-              </span>
-            </div>
-            <div className="flex items-center">
-              <span className="mr-2 text-green-500">⏰</span>
-              <span>
-                <strong>Time:</strong> {appointment.time}
-              </span>
-            </div>
-            <div className="flex items-start">
-              <span className="mr-2 text-red-400">📝</span>
-              <span>
-                <strong>Reason:</strong> {appointment.reason}
-              </span>
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  )}
-</section>
-
+        )}
+      </section>
 
       {/* Top Doctors */}
       <section className="p-6">
