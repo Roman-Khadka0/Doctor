@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Calendar from "./Calender";
 
 import Doctor1 from "../assets/Doctor1.jpg";
 import Doctor2 from "../assets/Doctor2.jpg";
 import Doctor4 from "../assets/Doctor4.jpg";
-import Dope from "../assets/Dope.jpg"
+import Dope from "../assets/Dope.jpg";
 
 const doctors = [
   {
@@ -43,75 +42,70 @@ const initialFavorites = [
 ];
 
 const Dashboard = () => {
-    const [user, setUser] = useState(null); // State to store user data
-    const [appointments, setAppointments] = useState([]);
-  
-    useEffect(() => {
-      // Fetch user data when the component mounts
-      const fetchUserData = async () => {
-        const token = localStorage.getItem("token"); // Retrieve token from local storage
-        if (!token) {
-          console.error("No token found");
-          window.location.href = "/login"; // Redirect to login if no token is found
-          return;
-        }
-  
-        try {
-          const response = await fetch("http://localhost:5000/api/auth/getUser", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ token }),
-          });
-  
-          const data = await response.json();
-          if (data.status === "ok") {
-            setUser(data.data); // Set user data in state
-          } else {
-            console.error("Failed to fetch user data:", data.error);
-          }
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-        }
-      };
-  
-      fetchUserData();
-
-      // Fetch appointments for the logged-in user
-      const fetchAppointments = async () => {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.error("No token found");
-          window.location.href = "/login"; // Redirect to login if no token is found
-          return;
-        }
-    
-        try {
-          const response = await fetch("http://localhost:5000/api/appointments/user", {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: token,
-            },
-          });
-    
-          const data = await response.json();
-          if (data.status === "ok") {
-            console.log(data.data);
-            setAppointments(data.data); // Set appointments data in state
-          } else {
-            console.error("Failed to fetch appointments:", data.error);
-          }
-        } catch (error) {
-          console.error("Error fetching appointments:", error);
-        }
-      };
-    
-      fetchAppointments();
-    }, []);
-
+  const [user, setUser] = useState(null);
+  const [appointments, setAppointments] = useState([]);
   const [favorites, setFavorites] = useState(initialFavorites);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No token found");
+        window.location.href = "/login";
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:5000/api/auth/getUser", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token }),
+        });
+
+        const data = await response.json();
+        if (data.status === "ok") {
+          setUser(data.data);
+        } else {
+          console.error("Failed to fetch user data:", data.error);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    const fetchAppointments = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No token found");
+        window.location.href = "/login";
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:5000/api/appointments/user", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+        });
+
+        const data = await response.json();
+        if (data.status === "ok") {
+          setAppointments(data.data);
+        } else {
+          console.error("Failed to fetch appointments:", data.error);
+        }
+      } catch (error) {
+        console.error("Error fetching appointments:", error);
+      }
+    };
+
+    fetchUserData();
+    fetchAppointments();
+  }, []);
 
   const toggleFavorite = (index) => {
     setFavorites((prevFavs) =>
@@ -137,15 +131,53 @@ const Dashboard = () => {
       {/* Welcome */}
       <div className="p-6 text-xl font-semibold">Welcome! {user ? user.name : "Loading..."}</div>
 
-      {/* Upcoming Appointments with Calendar */}
+      {/* Upcoming Appointments */}
       <section className="p-6">
-        <h2 className="text-lg font-bold mb-4">Upcoming Appointments</h2>
-
-        {/* Calendar component injected here */}
-        <div className="bg-white p-4 rounded-lg shadow-lg">
-          <Calendar />
+  <h2 className="text-xl font-bold mb-4 text-gray-800">🗓️ Upcoming Appointments</h2>
+  {appointments.length === 0 ? (
+    <p className="text-gray-600">No upcoming appointments found.</p>
+  ) : (
+    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {appointments.map((appointment) => (
+        <div
+          key={appointment._id}
+          className="bg-white border border-gray-200 rounded-2xl shadow-lg p-5 transition transform hover:scale-[1.02]"
+        >
+          <div className="flex items-center mb-3">
+            <div className="bg-blue-100 p-3 rounded-full text-blue-600 mr-3">
+              🩺
+            </div>
+            <h3 className="font-semibold text-lg text-gray-800">
+              Dr. {appointment.doctor}
+            </h3>
+          </div>
+          <div className="space-y-2 text-sm text-gray-700">
+            <div className="flex items-center">
+              <span className="mr-2 text-blue-500">📅</span>
+              <span>
+                <strong>Date:</strong>{" "}
+                {new Date(appointment.date).toLocaleDateString()}
+              </span>
+            </div>
+            <div className="flex items-center">
+              <span className="mr-2 text-green-500">⏰</span>
+              <span>
+                <strong>Time:</strong> {appointment.time}
+              </span>
+            </div>
+            <div className="flex items-start">
+              <span className="mr-2 text-red-400">📝</span>
+              <span>
+                <strong>Reason:</strong> {appointment.reason}
+              </span>
+            </div>
+          </div>
         </div>
-      </section>
+      ))}
+    </div>
+  )}
+</section>
+
 
       {/* Top Doctors */}
       <section className="p-6">
@@ -178,7 +210,7 @@ const Dashboard = () => {
                 <p className="text-sm text-gray-600">{doctor.specialty}</p>
                 <p className="text-sm font-bold">{doctor.hospital}</p>
                 <p className="text-yellow-500">⭐ {doctor.rating}</p>
-                </div>  
+              </div>
               <button
                 onClick={() => toggleFavorite(index)}
                 className="ml-auto text-2xl focus:outline-none"
