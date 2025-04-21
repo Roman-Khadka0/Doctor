@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { jwtDecode } from 'jwt-decode';
 
 import Doctor1 from "../assets/Doctor1.jpg";
 import Doctor2 from "../assets/Doctor2.jpg";
@@ -55,6 +56,16 @@ const Dashboard = () => {
         window.location.href = "/login";
         return;
       }
+
+      // Decode the token to check its expiry
+    const decoded = jwtDecode(token);
+    const currentTime = Date.now() / 1000; // Current time in seconds
+    if (decoded.exp < currentTime) {
+      console.error("Token has expired");
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+      return;
+    }
 
       try {
         const response = await fetch("http://localhost:5000/api/auth/getUser", {
