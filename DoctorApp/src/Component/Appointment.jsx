@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Background from "../assets/background.png"; // Background image for page
 import { Link } from "react-router-dom"; // Enables internal routing
-import Logo from "../assets/logo.png"; // App logo image
+import logo from "../assets/logo.png"; // App logo image
 
 // Sample list of doctors with their specialties
 const doctors = [
@@ -23,12 +23,21 @@ export default function Appointment() {
     reason: "",
   });
 
+  // State for dropdown visibility
+  const [showDropdown, setShowDropdown] = useState(false);
+
   // Handles input change and updates form state
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
+  };
+
+  // Handle logout
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/login";
   };
 
   // Handles form submission
@@ -82,34 +91,65 @@ export default function Appointment() {
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4 py-12 bg-cover bg-center"
-      style={{ backgroundImage: `url(${Background})` }} // Set background image
+      style={{ backgroundImage: `url(${Background})` }}
     >
       {/* Header/Nav Bar */}
       <header className="py-4 w-full absolute top-0 left-0 bg-[#258C9B]">
-        <div className="container mx-auto px-4 flex-center items-center justify-between">
-          <div className="flex items-center">
-            <div className="mr-10">
-              {/* Logo image */}
-              <img src={Logo} alt="logo" className="h-12 w-12" />
-            </div>
-            {/* Navigation links */}
-            <nav className="hidden lg:flex space-x-10 text-xl">
-              <Link to="/" className="text-white hover:text-gray-300 font-semibold">
-                Home
-              </Link>
-              <Link to="/dashboard" className="text-white hover:text-gray-300 font-semibold">
-                Doctors
-              </Link>
-              <Link to="/appointment" className="text-white hover:text-gray-300 font-semibold">
-                Appointments
-              </Link>
-            </nav>
+        <div className="container mx-auto px-4 flex items-center justify-between text-white">
+          {/* Left: Logo and Title */}
+          <div className="flex items-center space-x-3">
+            <img src={logo} alt="EasyDoc Logo" className="h-10 w-auto" />
+            <div className="text-2xl font-bold">EASY DOC</div>
+          </div>
+
+          {/* Center Nav Links */}
+          <nav className="space-x-6 text-lg">
+            <Link to="/" className="hover:text-gray-300">
+              HOME
+            </Link>
+            <Link to="/dashboard" className="hover:text-gray-300">
+              DOCTORS
+            </Link>
+            <Link to="/appointment" className="hover:text-gray-300">
+              APPOINTMENTS
+            </Link>
+          </nav>
+
+          {/* Right: User Avatar + Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setShowDropdown(!showDropdown)}
+              className="w-10 h-10 rounded-full overflow-hidden border-2 border-white focus:outline-none"
+            >
+              <img
+                src="https://i.pravatar.cc/300"
+                alt="User avatar"
+                className="w-full h-full object-cover"
+              />
+            </button>
+
+            {showDropdown && (
+              <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-10">
+                <Link
+                  to="/PProfile"
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Edit Account
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </header>
 
       {/* Appointment form container */}
-      <div className="bg-white bg-opacity-90 p-8 rounded-2xl shadow-xl w-full max-w-2xl">
+      <div className="bg-white bg-opacity-90 p-8 rounded-2xl shadow-xl w-full max-w-2xl mt-20">
         <h1 className="text-3xl font-bold text-center text-[#258C9B] mb-6">
           Book a Doctor Appointment
         </h1>
