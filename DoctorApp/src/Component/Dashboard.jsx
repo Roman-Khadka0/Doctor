@@ -132,27 +132,35 @@ const Dashboard = () => {
           <Link to="/appointment" className="hover:text-gray-300">APPOINTMENTS</Link>
         </div>
         <div className="relative">
-          <button
-            onClick={() => setShowDropdown(!showDropdown)}
-            className="w-10 h-10 rounded-full overflow-hidden border-2 border-white focus:outline-none"
-          >
-            <img
-              src="https://i.pravatar.cc/300" // Replace with user's profile image if available
-              alt="User avatar"
-              className="w-full h-full object-cover"
-            />
-          </button>
-          {showDropdown && (
-            <div className="absolute right-0 mt-2 w-32 bg-white rounded-md shadow-lg z-10">
-              <button
-                onClick={handleLogout}
-                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              >
-                Logout
-              </button>
-            </div>
-          )}
-        </div>
+  <button
+    onClick={() => setShowDropdown(!showDropdown)}
+    className="w-10 h-10 rounded-full overflow-hidden border-2 border-white focus:outline-none"
+  >
+    <img
+      src="https://i.pravatar.cc/300" // Replace with user's profile image if available
+      alt="User avatar"
+      className="w-full h-full object-cover"
+    />
+  </button>
+
+  {showDropdown && (
+    <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-10">
+      <Link
+        to="/PProfile"
+        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+      >
+        Edit Account
+      </Link>
+      <button
+        onClick={handleLogout}
+        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+      >
+        Logout
+      </button>
+    </div>
+  )}
+</div>
+
       </nav>
 
       {/* Welcome */}

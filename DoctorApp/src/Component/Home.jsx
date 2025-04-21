@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+
+// Import assets (images)
 import Logo from "../assets/Logo.png";
 import Cdoctor from "../assets/Cdoctor.jpg";
 import Appointment from "../assets/Appointment.jpg";
@@ -10,8 +12,10 @@ import Schedule from "../assets/schedule.jpg";
 import Booking from "../assets/booking.jpg";
 
 function Landing() {
+  // State to track which slide is currently shown in the hero section
   const [currentSlide, setCurrentSlide] = useState(0);
 
+  // Slides array used for the rotating hero banner
   const slides = [
     {
       image: Cdoctor,
@@ -33,15 +37,18 @@ function Landing() {
     },
   ];
 
+  // Function to go to the next slide in the hero section
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
   };
 
+  // Auto-rotate the hero slide every 7 seconds
   useEffect(() => {
     const interval = setInterval(nextSlide, 7000);
     return () => clearInterval(interval);
   }, []);
 
+  // Features displayed in the "Why Choose EasyDoc" section
   const features = [
     {
       title: "SIMPLIFIES SCHEDULING",
@@ -63,30 +70,33 @@ function Landing() {
     },
   ];
 
+  // Handle newsletter subscription (placeholder function)
   const handleSubscribe = (e) => {
     e.preventDefault();
     // Add newsletter subscription logic here
   };
 
   return (
-    
     <div className="flex flex-col bg-[#258C9B]">
+      
+      {/* HEADER SECTION */}
       <header className="py-4">
         <div className="container mx-auto px-4 flex items-center justify-between">
           <div className="flex items-center">
+            {/* Logo */}
             <div className="mr-10">
               <img src={Logo} alt="logo" className="h-15 w-15" />
             </div>
+
+            {/* Navigation Links */}
             <nav className="hidden lg:flex space-x-10 text-xl">
               <NavItem text="Home" />
-              <Link to="/dashboard">
-                <NavItem text="Doctors" />
-              </Link>
-              <Link to="/appointment">
-                <NavItem text="Appointments" />
-              </Link>
+              <Link to="/dashboard"><NavItem text="Doctors" /></Link>
+              <Link to="/appointment"><NavItem text="Appointments" /></Link>
             </nav>
           </div>
+
+          {/* Login & Sign Up Buttons */}
           <div className="flex items-center space-x-4 text-lg">
             <Link to="/Login">
               <button className="flex items-center text-white font-semibold hover:text-gray-300">
@@ -107,8 +117,12 @@ function Landing() {
         className="relative bg-cover bg-center min-h-[80vh] flex items-center justify-center"
         style={{ backgroundImage: `url(${Background})` }}
       >
+        {/* Overlay */}
         <div className="absolute inset-0 bg-black/0 z-0" />
+
+        {/* Hero Content */}
         <div className="container mx-auto px-4 py-20 md:py-28 flex flex-col md:flex-row items-center relative z-10">
+          {/* Text Content */}
           <div className="md:w-1/2 mb-10 md:mb-0 text-center md:text-left text-[#4AA8B5] ">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8">
               {slides[currentSlide].title}
@@ -120,6 +134,8 @@ function Landing() {
               </button>
             </Link>
           </div>
+
+          {/* Hero Image */}
           <div className="md:w-1/2 relative">
             <img
               src={slides[currentSlide].image}
@@ -140,6 +156,7 @@ function Landing() {
             Online Appointment, Phone-in Appointment, Walk-in Appointment with Token
           </p>
 
+          {/* Feature Cards */}
           <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-10">
             {features.map((feature, index) => (
               <div
@@ -148,7 +165,7 @@ function Landing() {
               >
                 <div className="flex justify-center">
                   <img
-                    src={feature.image} // ✅ Fixed line
+                    src={feature.image}
                     alt={feature.title}
                     className="h-24 mb-6 object-contain"
                   />
@@ -168,6 +185,8 @@ function Landing() {
       {/* FOOTER SECTION */}
       <footer className="bg-[#258C9B] text-gray-700 py-12 px-6 md:px-20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          
+          {/* Company Info */}
           <div>
             <img src={Logo} alt="Logo" className="h-10 mb-4" />
             <p className="mb-4 text-sm text-white font-medium">
@@ -187,6 +206,7 @@ function Landing() {
             </a>
           </div>
 
+          {/* Quick Links & Subscription */}
           <div>
             <ul className="space-y-2 text-sm text-white">
               <li>Clinical Procedure Scheduling</li>
@@ -202,6 +222,7 @@ function Landing() {
               <li>Special Offer</li>
             </ul>
 
+            {/* Subscription Form */}
             <form onSubmit={handleSubscribe} className="mt-6">
               <p className="text-sm mb-2 font-medium text-white">
                 Subscribe to EasyDoc:
@@ -218,6 +239,7 @@ function Landing() {
             </form>
           </div>
 
+          {/* Call to Actions & Mission */}
           <div>
             <div className="flex flex-wrap gap-2 mb-4">
               <button className="bg-sky-500 text-white px-3 py-1 rounded text-sm">
@@ -245,14 +267,14 @@ function Landing() {
   );
 }
 
-// NavItem Component
+// NavItem Component - used for main navigation links
 const NavItem = ({ text }) => (
   <a href="#" className="text-white font-semibold text-lg hover:text-gray-300">
     {text}
   </a>
 );
 
-// User Icon
+// User Icon (SVG)
 const UserIcon = ({ className }) => (
   <svg
     className={className}
@@ -269,7 +291,7 @@ const UserIcon = ({ className }) => (
   </svg>
 );
 
-// Chevron Icon
+// Chevron Icon (SVG)
 const ChevronRightIcon = ({ className }) => (
   <svg
     className={className}
