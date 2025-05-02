@@ -11,8 +11,15 @@ import Power from "../assets/power.jpg";
 import Schedule from "../assets/schedule.jpg";
 import Booking from "../assets/booking.jpg";
 
+// Dummy user for now — replace with real authentication logic
+const dummyUser = {
+  isLoggedIn: true, // Change this to false to test non-logged-in view
+  profilePic: "https://randomuser.me/api/portraits/men/75.jpg", // Replace with your user's profile picture URL
+};
+
 function Landing() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [user, setUser] = useState(null); // State to hold logged in user
 
   const slides = [
     {
@@ -44,6 +51,11 @@ function Landing() {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    // You can replace this dummy logic with your real login checking logic
+    setUser(dummyUser.isLoggedIn ? dummyUser : null);
+  }, []);
+
   const features = [
     {
       title: "SIMPLIFIES SCHEDULING",
@@ -67,12 +79,11 @@ function Landing() {
 
   const handleSubscribe = (e) => {
     e.preventDefault();
-    // Add newsletter logic
+    // Add newsletter logic here
   };
 
   return (
     <div className="flex flex-col bg-[#258C9B]">
-
       {/* HEADER SECTION */}
       <header className="py-4">
         <div className="container mx-auto px-4 flex items-center justify-between">
@@ -90,18 +101,30 @@ function Landing() {
             </nav>
           </div>
 
-          {/* Login/Sign Up */}
+          {/* User Section */}
           <div className="flex items-center space-x-4 text-lg">
-            <Link to="/Login">
-              <button className="flex items-center text-white font-semibold hover:text-gray-300">
-                <UserIcon className="w-4 h-4 mr-2" /> LOGIN
-              </button>
-            </Link>
-            <Link to="/SignUp">
-              <button className="border border-white text-white px-4 py-2 rounded-lg hover:text-gray-300 hover:border-gray-300">
-                SIGN UP
-              </button>
-            </Link>
+            {user ? (
+              <Link to="/profile">
+                <img
+                  src={user.profilePic}
+                  alt="Profile"
+                  className="w-10 h-10 rounded-full border-2 border-white hover:border-gray-300 transition"
+                />
+              </Link>
+            ) : (
+              <>
+                <Link to="/Login">
+                  <button className="flex items-center text-white font-semibold hover:text-gray-300">
+                    <UserIcon className="w-4 h-4 mr-2" /> LOGIN
+                  </button>
+                </Link>
+                <Link to="/SignUp">
+                  <button className="border border-white text-white px-4 py-2 rounded-lg hover:text-gray-300 hover:border-gray-300">
+                    SIGN UP
+                  </button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>
