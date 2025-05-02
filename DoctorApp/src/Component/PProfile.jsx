@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-//+import { UserIcon } from '@heroicons/react/solid'; // or 'outline' depending on your UI
+//import { UserIcon } from '@heroicons/react/solid'; // or 'outline' depending on your UI
 import logo from '../assets/logo.png'; // Adjust path as needed
 
 const NavItem = ({ text }) => (
@@ -27,7 +27,7 @@ const PatientProfile = () => {
 
             {/* Navigation Links */}
             <nav className="hidden lg:flex space-x-10 text-xl">
-              <NavItem text="Home" />
+            <Link to="/">  <NavItem text="Home" /> </Link> 
               <Link to="/dashboard"><NavItem text="Doctors" /></Link>
               <Link to="/appointment"><NavItem text="Appointments" /></Link>
             </nav>
