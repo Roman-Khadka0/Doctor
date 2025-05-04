@@ -39,7 +39,7 @@ const login = async (req, res) => {
   }
   if (await bcrypt.compare(password, user.password)) {
     // Included user data in the token payload
-    const token = jwt.sign({ email: user.email, id: user._id, role: user.role }, JWT_SECRET, { expiresIn: "5h" });
+    const token = jwt.sign({ email: user.email, id: user._id, role: user.role, profilePicture: user.profilePicture }, JWT_SECRET, { expiresIn: "5h" });
 
     return res.json({ status: "ok", data: token });
   }
@@ -52,7 +52,7 @@ const getUser = async (req, res) => {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     const userid = decoded.id;
-    const user = await User.findById(userid); 
+    const user = await User.findById(userid);
     return res.json({ status: "ok", data: user });
   } catch (error) {
     res.status(401).json({ error: "Siuu" });

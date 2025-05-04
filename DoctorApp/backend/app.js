@@ -5,6 +5,7 @@ const mongoose = require("mongoose"); // to connect to mongodb
 const logsignroutes = require("./routes/loginsignuproute"); // importing the routes for login and signup
 const adminRoutes = require("./routes/adminroute"); // importing the routes for admin
 const appointmentRoutes = require("./routes/appointmentRoutes"); // importing the routes for appointment
+const userDetailsRoutes = require("./routes/userDetailsRoutes"); // importing the routes for user details
 
 require("dotenv").config(); // to use environment variables
 
@@ -18,6 +19,7 @@ app.use(cors ({credentials: true}))
 app.use( '/api/auth', logsignroutes); // using the routes for login and signup
 app.use("/api/admin", adminRoutes); // Add admin routes
 app.use("/api/appointments", appointmentRoutes); // Add appointment routes
+app.use("/api/userdetails", userDetailsRoutes); // Add user details routes
 
 // Connection to the database
 mongoose.connect(process.env.DB_URI)

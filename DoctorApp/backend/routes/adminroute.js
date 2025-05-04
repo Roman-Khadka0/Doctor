@@ -1,5 +1,5 @@
 const express = require("express");
-const isAdmin = require("../middelwares/adminauth"); // Middleware to check if the user is an admin
+const isAdmin = require("../middlewares/adminauth"); // Middleware to check if the user is an admin
 const User = require("../models/userData");
 
 const router = express.Router();

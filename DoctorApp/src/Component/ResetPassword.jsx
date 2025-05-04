@@ -20,6 +20,7 @@ const ResetPassword = () => {
       const data = await response.json();
       if (data.status === "ok") {
         alert("Password reset successful");
+        winddows.location.href = "/login"; // Redirect to login page after successful reset
       } else {
         alert(data.error);
       }
