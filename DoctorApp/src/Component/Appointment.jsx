@@ -147,7 +147,6 @@ export default function Appointment() {
           </div>
         </div>
       </header>
-
       {/* Appointment form container */}
       <div className="bg-white bg-opacity-90 p-8 rounded-2xl shadow-xl w-full max-w-2xl mt-20">
         <h1 className="text-3xl font-bold text-center text-[#258C9B] mb-6">
