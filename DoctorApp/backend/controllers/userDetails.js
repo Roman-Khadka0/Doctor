@@ -25,6 +25,7 @@ const getUserDetails = async (req, res) => {
               gender: userDetails.gender,
               dob: userDetails.dob,
               address: userDetails.address,
+              bloodGroup: userDetails.bloodGroup,
             },
           });
       } catch (error) {
@@ -37,6 +38,7 @@ const getUserDetails = async (req, res) => {
               gender: "",
               dob: "",
               address: "",
+              bloodGroup: "",
             },
           });
         }
@@ -48,7 +50,8 @@ const getUserDetails = async (req, res) => {
 
 // Controller to create or update user details
 const saveUserDetails = async (req, res) => {
-  const { name, email, phone, gender, dob, address } = req.body;
+  // Include bloodGroup in the destructuring of req.body
+  const { name, email, phone, gender, dob, address, bloodGroup } = req.body;
   const profilePicture = req.file ? req.file.path : undefined; // Get the uploaded file's URL from Cloudinary
 
   try {
@@ -71,6 +74,8 @@ const saveUserDetails = async (req, res) => {
       existingDetails.gender = gender;
       existingDetails.dob = dob;
       existingDetails.address = address;
+      existingDetails.bloodGroup = bloodGroup; // Save blood group
+      if (profilePicture) existingDetails.profilePicture = profilePicture; // Save profile picture in UserDetails model
       await existingDetails.save();
       res.json({ status: "ok", message: "User details updated successfully", data: { profilePicture } });
     } else {
@@ -80,6 +85,8 @@ const saveUserDetails = async (req, res) => {
         gender,
         dob,
         address,
+        bloodGroup, // Save blood group
+        profilePicture,
       });
       await userDetails.save();
       res.json({ status: "ok", message: "User details saved successfully", data: { profilePicture } });

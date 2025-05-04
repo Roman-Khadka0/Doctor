@@ -13,6 +13,7 @@ export default function PatientProfile() {
     dob: "",
     address: "",
     profilePicture: "",
+    bloodGroup: "",
   });
   const [previewImage, setPreviewImage] = useState(""); // State to store the preview of the uploaded image
 
@@ -44,8 +45,10 @@ export default function PatientProfile() {
             gender: data.data.gender,
             dob: data.data.dob,
             address: data.data.address,
-            profilePicture: data.data.profilePicture,
+            // profilePicture: data.data.profilePicture,
+            bloodGroup: data.data.bloodGroup,
           });
+          console.log(data.data.profilePicture);
           setPreviewImage(data.data.profilePicture); // Set the initial profile picture
         } else {
           console.error("Failed to fetch user details:", data.error);
@@ -92,6 +95,7 @@ export default function PatientProfile() {
     formData.append("gender", profile.gender);
     formData.append("dob", profile.dob);
     formData.append("address", profile.address);
+    formData.append("bloodGroup", profile.bloodGroup);
     if (profile.profilePicture && typeof profile.profilePicture !== "string") {
       formData.append("profilePicture", profile.profilePicture); // Append the file only if it's newly selected
     }
@@ -162,7 +166,7 @@ export default function PatientProfile() {
 
         <div className="flex flex-col md:flex-row items-center md:items-start gap-6 mb-6">
           <img
-            src={previewImage || "https://via.placeholder.com/150"} // Display the preview or a default image
+            src={previewImage || "https://res.cloudinary.com/dzrbxikc8/image/upload/v1745256288/default-profile-account-unknown-icon-black-silhouette-free-vector_jbrjhz.jpg"} // Display the preview or a default image
             alt="Profile"
             className="w-32 h-32 rounded-full object-cover shadow-md"
           />
@@ -242,6 +246,27 @@ export default function PatientProfile() {
                 disabled={!isEditing}
                 className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#258C9B] disabled:bg-gray-100"
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">Blood Group</label>
+              <select
+                name="bloodGroup"
+                value={profile.bloodGroup}
+                onChange={handleChange}
+                disabled={!isEditing}
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#258C9B] disabled:bg-gray-100"
+              >
+                <option value="">Select Blood Group</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+              </select>
             </div>
 
             <div className="md:col-span-2">

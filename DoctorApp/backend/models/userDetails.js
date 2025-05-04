@@ -7,6 +7,7 @@ const UserDetailsSchema = new mongoose.Schema(
     gender: { type: String },
     dob: { type: Date },
     address: { type: String },
+    bloodGroup: { type: String },
   },
   {
     collection: "userdetails",
