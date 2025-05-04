@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 // Import assets (images)
-import Logo from "../assets/Logo.png";
+import logo from "../assets/Logo.png";
 import Cdoctor from "../assets/Cdoctor.jpg";
 import Appointment from "../assets/Appointment.jpg";
 import Variety from "../assets/Variety.jpg";
@@ -11,11 +11,16 @@ import Power from "../assets/power.jpg";
 import Schedule from "../assets/schedule.jpg";
 import Booking from "../assets/booking.jpg";
 
-function Landing() {
-  // State to track which slide is currently shown in the hero section
-  const [currentSlide, setCurrentSlide] = useState(0);
+// Dummy user for now — replace with real authentication logic
+const dummyUser = {
+  isLoggedIn: true, // Change this to false to test non-logged-in view
+  profilePic: "https://randomuser.me/api/portraits/men/75.jpg", // Replace with your user's profile picture URL
+};
 
-  // Slides array used for the rotating hero banner
+function Landing() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [user, setUser] = useState(null); // State to hold logged in user
+
   const slides = [
     {
       image: Cdoctor,
@@ -37,18 +42,20 @@ function Landing() {
     },
   ];
 
-  // Function to go to the next slide in the hero section
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % slides.length);
   };
 
-  // Auto-rotate the hero slide every 7 seconds
   useEffect(() => {
     const interval = setInterval(nextSlide, 7000);
     return () => clearInterval(interval);
   }, []);
 
-  // Features displayed in the "Why Choose EasyDoc" section
+  useEffect(() => {
+    // You can replace this dummy logic with your real login checking logic
+    setUser(dummyUser.isLoggedIn ? dummyUser : null);
+  }, []);
+
   const features = [
     {
       title: "SIMPLIFIES SCHEDULING",
@@ -70,22 +77,20 @@ function Landing() {
     },
   ];
 
-  // Handle newsletter subscription (placeholder function)
   const handleSubscribe = (e) => {
     e.preventDefault();
-    // Add newsletter subscription logic here
+    // Add newsletter logic here
   };
 
   return (
     <div className="flex flex-col bg-[#258C9B]">
-      
       {/* HEADER SECTION */}
       <header className="py-4">
         <div className="container mx-auto px-4 flex items-center justify-between">
           <div className="flex items-center">
             {/* Logo */}
             <div className="mr-10">
-              <img src={Logo} alt="logo" className="h-15 w-15" />
+              <img src={logo} alt="Logo" className="h-16 w-auto" />
             </div>
 
             {/* Navigation Links */}
@@ -96,18 +101,30 @@ function Landing() {
             </nav>
           </div>
 
-          {/* Login & Sign Up Buttons */}
+          {/* User Section */}
           <div className="flex items-center space-x-4 text-lg">
-            <Link to="/Login">
-              <button className="flex items-center text-white font-semibold hover:text-gray-300">
-                <UserIcon className="w-4 h-4 mr-2" /> LOGIN
-              </button>
-            </Link>
-            <Link to="/SignUp">
-              <button className="border border-white text-white px-4 py-2 rounded-lg hover:text-gray-300 hover:border-gray-300">
-                SIGN UP
-              </button>
-            </Link>
+            {user ? (
+              <Link to="/profile">
+                <img
+                  src={user.profilePic}
+                  alt="Profile"
+                  className="w-10 h-10 rounded-full border-2 border-white hover:border-gray-300 transition"
+                />
+              </Link>
+            ) : (
+              <>
+                <Link to="/Login">
+                  <button className="flex items-center text-white font-semibold hover:text-gray-300">
+                    <UserIcon className="w-4 h-4 mr-2" /> LOGIN
+                  </button>
+                </Link>
+                <Link to="/SignUp">
+                  <button className="border border-white text-white px-4 py-2 rounded-lg hover:text-gray-300 hover:border-gray-300">
+                    SIGN UP
+                  </button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -117,13 +134,9 @@ function Landing() {
         className="relative bg-cover bg-center min-h-[80vh] flex items-center justify-center"
         style={{ backgroundImage: `url(${Background})` }}
       >
-        {/* Overlay */}
         <div className="absolute inset-0 bg-black/0 z-0" />
-
-        {/* Hero Content */}
         <div className="container mx-auto px-4 py-20 md:py-28 flex flex-col md:flex-row items-center relative z-10">
-          {/* Text Content */}
-          <div className="md:w-1/2 mb-10 md:mb-0 text-center md:text-left text-[#4AA8B5] ">
+          <div className="md:w-1/2 mb-10 md:mb-0 text-center md:text-left text-[#4AA8B5]">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8">
               {slides[currentSlide].title}
             </h1>
@@ -135,7 +148,6 @@ function Landing() {
             </Link>
           </div>
 
-          {/* Hero Image */}
           <div className="md:w-1/2 relative">
             <img
               src={slides[currentSlide].image}
@@ -149,14 +161,11 @@ function Landing() {
       {/* FEATURES SECTION */}
       <section className="bg-gray-100 py-20 px-6">
         <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-gray-800">
-            WHY CHOOSE EASYDOC
-          </h2>
+          <h2 className="text-3xl font-bold text-gray-800">WHY CHOOSE EASYDOC</h2>
           <p className="mt-4 text-[#258C9B] text-lg">
             Online Appointment, Phone-in Appointment, Walk-in Appointment with Token
           </p>
 
-          {/* Feature Cards */}
           <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-10">
             {features.map((feature, index) => (
               <div
@@ -185,17 +194,14 @@ function Landing() {
       {/* FOOTER SECTION */}
       <footer className="bg-[#258C9B] text-gray-700 py-12 px-6 md:px-20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-          
-          {/* Company Info */}
           <div>
-            <img src={Logo} alt="Logo" className="h-10 mb-4" />
+            <img src={logo} alt="EasyDoc Logo" className="h-10 mb-4" />
             <p className="mb-4 text-sm text-white font-medium">
               ONLINE APPOINTMENT SCHEDULING PLATFORM
             </p>
             <p className="text-sm mb-1 text-white">📍 herald Kathmandu, Naxal</p>
             <p className="text-sm mb-1 text-white">📞 +977 9811203806</p>
             <p className="text-sm mb-4 text-white">📧 post@easydoc.com</p>
-
             <p className="mb-2 font-medium text-white">FOLLOW US</p>
             <a href="#">
               <img
@@ -206,7 +212,6 @@ function Landing() {
             </a>
           </div>
 
-          {/* Quick Links & Subscription */}
           <div>
             <ul className="space-y-2 text-sm text-white">
               <li>Clinical Procedure Scheduling</li>
@@ -221,8 +226,6 @@ function Landing() {
               <li>FAQ</li>
               <li>Special Offer</li>
             </ul>
-
-            {/* Subscription Form */}
             <form onSubmit={handleSubscribe} className="mt-6">
               <p className="text-sm mb-2 font-medium text-white">
                 Subscribe to EasyDoc:
@@ -239,7 +242,6 @@ function Landing() {
             </form>
           </div>
 
-          {/* Call to Actions & Mission */}
           <div>
             <div className="flex flex-wrap gap-2 mb-4">
               <button className="bg-sky-500 text-white px-3 py-1 rounded text-sm">
@@ -267,14 +269,12 @@ function Landing() {
   );
 }
 
-// NavItem Component - used for main navigation links
 const NavItem = ({ text }) => (
   <a href="#" className="text-white font-semibold text-lg hover:text-gray-300">
     {text}
   </a>
 );
 
-// User Icon (SVG)
 const UserIcon = ({ className }) => (
   <svg
     className={className}
@@ -291,7 +291,6 @@ const UserIcon = ({ className }) => (
   </svg>
 );
 
-// Chevron Icon (SVG)
 const ChevronRightIcon = ({ className }) => (
   <svg
     className={className}
