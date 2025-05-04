@@ -48,46 +48,46 @@ const getUserDetails = async (req, res) => {
 
 // Controller to create or update user details
 const saveUserDetails = async (req, res) => {
-    const { name, email, phone, gender, dob, address } = req.body;
-    const profilePicture = req.file ? req.file.path : undefined; // Get the uploaded file's URL from Cloudinary
-  
-    try {
-      // Update the User model for name and email
-      const user = await User.findById(req.user.id);
-      if (!user) {
-        return res.status(404).json({ error: "User not found" });
-      }
-  
-      if (name) user.name = name;
-      if (email) user.email = email;
-      if (profilePicture) user.profilePicture = profilePicture;
-      await user.save();
-  
-      // Update or create user details in the UserDetails model
-      const existingDetails = await UserDetails.findOne({ userId: req.user.id });
-  
-      if (existingDetails) {
-        existingDetails.phone = phone;
-        existingDetails.gender = gender;
-        existingDetails.dob = dob;
-        existingDetails.address = address;
-        await existingDetails.save();
-        res.json({ status: "ok", message: "User details updated successfully" });
-      } else {
-        const userDetails = new UserDetails({
-          userId: req.user.id,
-          phone,
-          gender,
-          dob,
-          address,
-        });
-        await userDetails.save();
-        res.json({ status: "ok", message: "User details saved successfully" });
-      }
-    } catch (error) {
-      console.error("Error saving user details:", error);
-      res.status(500).json({ error: "Failed to save user details" });
+  const { name, email, phone, gender, dob, address } = req.body;
+  const profilePicture = req.file ? req.file.path : undefined; // Get the uploaded file's URL from Cloudinary
+
+  try {
+    // Update the User model for name, email, and profile picture
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
     }
-  };
+
+    if (name) user.name = name;
+    if (email) user.email = email;
+    if (profilePicture) user.profilePicture = profilePicture; // Save profile picture URL
+    await user.save();
+
+    // Update or create user details in the UserDetails model
+    const existingDetails = await UserDetails.findOne({ userId: req.user.id });
+
+    if (existingDetails) {
+      existingDetails.phone = phone;
+      existingDetails.gender = gender;
+      existingDetails.dob = dob;
+      existingDetails.address = address;
+      await existingDetails.save();
+      res.json({ status: "ok", message: "User details updated successfully", data: { profilePicture } });
+    } else {
+      const userDetails = new UserDetails({
+        userId: req.user.id,
+        phone,
+        gender,
+        dob,
+        address,
+      });
+      await userDetails.save();
+      res.json({ status: "ok", message: "User details saved successfully", data: { profilePicture } });
+    }
+  } catch (error) {
+    console.error("Error saving user details:", error);
+    res.status(500).json({ error: "Failed to save user details" });
+  }
+};
 
 module.exports = { getUserDetails, saveUserDetails };
