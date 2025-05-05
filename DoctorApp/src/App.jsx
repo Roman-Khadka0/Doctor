@@ -17,7 +17,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<HomeW />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/dashboard" element={<Dashboard />} />
@@ -27,7 +27,7 @@ function App() {
         <Route path="/PProfile" element={<PProfile />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/docdash" element={<DocDash />} />
-        <Route path="/HomeW" element={<HomeW />} />
+        <Route path="/Home" element={<Home />} />
       </Routes>
     </Router>
   );

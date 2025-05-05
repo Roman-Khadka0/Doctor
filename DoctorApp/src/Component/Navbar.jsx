@@ -13,7 +13,7 @@ const Header = ({ logo, user = {} }) => {
   const fallbackAvatar = "https://via.placeholder.com/40?text=U"; // Replace with your preferred fallback
 
   return (
-    <header className="py-4 bg-gray-800">
+    <header className="py-4 bg-[#4AA8B5]">
       <div className="container mx-auto px-4 flex items-center justify-between">
         <div className="flex items-center">
           {/* Logo */}

@@ -87,7 +87,7 @@ function Landing() {
     <div className="flex flex-col bg-[#258C9B]">
       {/* HEADER SECTION */}
  {/* Navbar */}
- <nav className="bg-[#1E2A38] p-4 text-white">
+ <nav className="bg-[#4AA8B5] p-4 text-white">
   <div className="max-w-7xl mx-auto flex items-center justify-between">
     {/* Left: Logo and Nav Links */}
     <div className="flex items-center space-x-12">
@@ -97,7 +97,7 @@ function Landing() {
       </div>
 
       {/* Nav Links */}
-      <div className="hidden lg:flex space-x-8 text-lg">
+      <div className="hidden lg:flex space-x-8 text-xl">
         <Link to="/" className="hover:text-gray-300">Home</Link>
         <Link to="/dashboard" className="hover:text-gray-300">Doctors</Link>
         <Link to="/appointment" className="hover:text-gray-300">Appointments</Link>
@@ -106,8 +106,8 @@ function Landing() {
 
     {/* Right: Login / Signup */}
     <div className="flex space-x-8 text-lg">
-      <Link to="/login" className="hover:text-gray-300 border-4">Login</Link>
-      <Link to="/signup" className="hover:text-gray-300">Signup</Link>
+      <Link to="/login" className="hover:text-gray-300 hover:border-1">Login</Link>
+      <Link to="/signup" className="hover:text-gray-300 hover:border-1">Signup</Link>
     </div>
   </div>
 </nav>
