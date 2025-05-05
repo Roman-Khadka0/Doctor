@@ -3,6 +3,7 @@ import { useState } from "react";
 import Background from "../assets/background.png"; // Background image for page
 import { Link } from "react-router-dom"; // Enables internal routing
 import logo from "../assets/logo.png"; // App logo image
+import Navbar from '../Component/Navbar'
 
 // Sample list of doctors with their specialties
 const doctors = [

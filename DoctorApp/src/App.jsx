@@ -9,13 +9,15 @@ import ForgotPassword from "./Component/ForgotPassword";
 import ResetPassword from "./Component/ResetPassword";
 import PProfile from "./Component/PProfile";
 import AdminDashboard from "./Component/AdminDashboard";
+import DocDash from "./Component/DocDash";
+import HomeW from './Component/HomeW'
 
 function App() {
 
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<HomeW />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/dashboard" element={<Dashboard />} />
@@ -24,6 +26,8 @@ function App() {
         <Route path="/resetPassword/:token" element={<ResetPassword />} />
         <Route path="/PProfile" element={<PProfile />} />
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/docdash" element={<DocDash />} />
+        <Route path="/Home" element={<Home />} />
       </Routes>
     </Router>
   );
