@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { jwtDecode } from 'jwt-decode';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart, faHeartBroken } from '@fortawesome/free-solid-svg-icons'; // Add the heart icons
 import logo from "../assets/Logo.png";
 import Navbar from "../Component/Navbar";
 
 function Landing() {
+  const [user, setUser] = useState(null);
+  const [appointments, setAppointments] = useState([]);
   const [showAllDoctors, setShowAllDoctors] = useState(false);
   const [favorites, setFavorites] = useState([]);
 
@@ -18,6 +21,82 @@ function Landing() {
   ];
 
   const displayedDoctors = showAllDoctors ? doctors : doctors.slice(0, 3); // Show only the first 3 doctors when 'showAllDoctors' is false
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No token found");
+        window.location.href = "/login";
+        return;
+      }
+
+      // Decode the token to check its expiry
+    const decoded = jwtDecode(token);
+    const currentTime = Date.now() / 1000; // Current time in seconds
+    if (decoded.exp < currentTime) {
+      console.error("Token has expired");
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+      return;
+    }
+
+      try {
+        const response = await fetch("http://localhost:5000/api/auth/getUser", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token }),
+        });
+
+        const data = await response.json();
+        if (data.status === "ok") {
+          setUser(data.data);
+        } else {
+          console.error("Failed to fetch user data:", data.error);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    const fetchAppointments = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No token found");
+        window.location.href = "/login";
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:5000/api/appointments/user", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+        });
+
+        const data = await response.json();
+        if (data.status === "ok") {
+          const currentDateTime = new Date(); // Get the current date and time
+          const upcomingAppointments = data.data.filter((appointment) => {
+            const appointmentDateTime = new Date(`${appointment.date}T${appointment.time}`);
+            return appointmentDateTime > currentDateTime; // Filter only future appointments
+          });
+          setAppointments(upcomingAppointments); // Set only upcoming appointments
+        } else {
+          console.error("Failed to fetch appointments:", data.error);
+        }
+      } catch (error) {
+        console.error("Error fetching appointments:", error);
+      }
+    };
+
+    fetchUserData();
+    fetchAppointments();
+  }, []);
 
   const handleFavoriteClick = (doctor) => {
     if (favorites.some((fav) => fav.name === doctor.name)) {
@@ -37,40 +116,55 @@ function Landing() {
       <Navbar logo={logo}  />
 
       <section className="bg-white py-16 px-6">
+
+        {/* Welcome */}
+      <div className="p-6 text-xl font-semibold">Welcome! {user ? user.name : "Loading..."}</div>
+
         {/* Upcoming Appointments */}
         <div className="mb-12">
           <h2 className="text-2xl font-bold text-[#258C9B] mb-4">Upcoming Appointments</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[ 
-              {
-                doctor: "Dr. Nisha Thapa",
-                time: "May 6, 2025 - 10:30 AM",
-                type: "General Checkup",
-                image: "https://randomuser.me/api/portraits/women/65.jpg",
-              },
-              {
-                doctor: "Dr. Suman Basnet",
-                time: "May 7, 2025 - 2:00 PM",
-                type: "Dental Cleaning",
-                image: "https://randomuser.me/api/portraits/men/43.jpg",
-              },
-              {
-                doctor: "Dr. Rajiv Khadka",
-                time: "May 8, 2025 - 4:00 PM",
-                type: "Eye Exam",
-                image: "https://randomuser.me/api/portraits/men/52.jpg",
-              },
-            ].map((appt, idx) => (
-              <div key={idx} className="bg-[#f1fafa] p-6 rounded-xl shadow-md flex items-center gap-4">
-                <img src={appt.image} alt={appt.doctor} className="w-16 h-16 rounded-full object-cover" />
-                <div>
-                  <h3 className="text-xl font-semibold text-[#258C9B]">{appt.doctor}</h3>
-                  <p className="text-gray-700">{appt.type}</p>
-                  <p className="text-gray-600 text-sm">{appt.time}</p>
+          {appointments.length === 0 ? (
+          <p className="text-gray-600">No upcoming appointments found.</p>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {appointments.map((appointment) => (
+              <div
+                key={appointment._id}
+                className="bg-white border border-gray-200 rounded-2xl shadow-lg p-5 transition transform hover:scale-[1.02]"
+              >
+                <div className="flex items-center mb-3">
+                  <div className="bg-blue-100 p-3 rounded-full text-blue-600 mr-3">
+                    🩺
+                  </div>
+                  <h3 className="font-semibold text-lg text-gray-800">
+                    {appointment.doctor}
+                  </h3>
+                </div>
+                <div className="space-y-2 text-sm text-gray-700">
+                  <div className="flex items-center">
+                    <span className="mr-2 text-blue-500">📅</span>
+                    <span>
+                      <strong>Date:</strong>{" "}
+                      {new Date(appointment.date).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <div className="flex items-center">
+                    <span className="mr-2 text-green-500">⏰</span>
+                    <span>
+                      <strong>Time:</strong> {appointment.time}
+                    </span>
+                  </div>
+                  <div className="flex items-start">
+                    <span className="mr-2 text-red-400">📝</span>
+                    <span>
+                      <strong>Reason:</strong> {appointment.reason}
+                    </span>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
+        )}
         </div>
 
         {/* Top Doctors */}
