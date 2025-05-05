@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useRef, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 // NavItem component
 const NavItem = ({ text }) => (
@@ -8,46 +8,31 @@ const NavItem = ({ text }) => (
   </span>
 );
 
-const Header = ({ logo }) => {
-  const [user, setUser] = useState({});
-  const fallbackAvatar = "https://via.placeholder.com/40?text=U"; // Replace with your preferred fallback
+const Header = ({ logo, user = {}, handleLogout }) => {
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+  const navigate = useNavigate();
+  const fallbackAvatar = "https://via.placeholder.com/40?text=U";
 
+  // Close dropdown when clicking outside
   useEffect(() => {
-    const fetchUserDetails = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        console.error("No token found. User is not logged in.");
-        return;
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
       }
-
-      try {
-        const response = await fetch("http://localhost:5000/api/userdetails/get", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token,
-          },
-        });
-
-        const data = await response.json();
-        if (data.status === "ok") {
-          setUser({
-            name: data.data.name,
-            avatar: data.data.profilePicture, // Fetch profile picture from the backend
-          });
-        } else {
-          console.error("Failed to fetch user details:", data.error);
-        }
-      } catch (error) {
-        console.error("Error fetching user details:", error);
-      }
-    };
-
-    fetchUserDetails();
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleLogoutClick = () => {
+    if (handleLogout) handleLogout(); 
+    localStorage.removeItem("token")
+    navigate("/"); 
+  };
+
   return (
-    <header className="py-4 bg-[#4AA8B5]">
+    <header className="py-4 bg-[#4AA8B5] relative">
       <div className="container mx-auto px-4 flex items-center justify-between">
         <div className="flex items-center">
           {/* Logo */}
@@ -57,21 +42,37 @@ const Header = ({ logo }) => {
 
           {/* Navigation Links */}
           <nav className="hidden lg:flex space-x-10 text-xl">
-            <NavItem text="Home" />
-            <Link to="/dashboard"><NavItem text="Doctors" /></Link>
+            <Link to="/home"><NavItem text="Home" /></Link>
+            <Link to="/docdash"><NavItem text="Doctors" /></Link>
             <Link to="/appointment"><NavItem text="Appointments" /></Link>
           </nav>
         </div>
 
         {/* User Section */}
-        <div className="flex items-center space-x-4 text-lg">
-          <Link to="/pprofile">
-            <img
-              src={user?.avatar || fallbackAvatar} // Use the profile picture or fallback
-              alt="Profile"
-              className="w-10 h-10 rounded-full border-2 border-white hover:border-gray-300 transition"
-            />
-          </Link>
+        <div className="relative" ref={dropdownRef}>
+          <img
+            src={user?.avatar || fallbackAvatar}
+            alt="Profile"
+            onClick={() => setShowDropdown(!showDropdown)}
+            className="w-10 h-10 rounded-full border-2 border-white hover:border-gray-300 cursor-pointer transition"
+          />
+
+          {showDropdown && (
+            <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-10">
+              <Link
+                to="/PProfile"
+                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Edit Account
+              </Link>
+              <button
+                onClick={handleLogoutClick}
+                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Logout
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>

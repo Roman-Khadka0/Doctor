@@ -98,8 +98,8 @@ function Landing() {
 
       {/* Nav Links */}
       <div className="hidden lg:flex space-x-8 text-xl">
-        <Link to="/" className="hover:text-gray-300">Home</Link>
-        <Link to="/dashboard" className="hover:text-gray-300">Doctors</Link>
+        <Link to="/home" className="hover:text-gray-300">Home</Link>
+        <Link to="/docdash" className="hover:text-gray-300">Doctors</Link>
         <Link to="/appointment" className="hover:text-gray-300">Appointments</Link>
       </div>
     </div>
