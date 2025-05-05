@@ -43,7 +43,7 @@ const Login = () => {
           if (decoded.role === "admin") {
             window.location.href = "/admin"; // Admin dashboard
           } else {
-            window.location.href = "/dashboard"; // Regular user dashboard
+            window.location.href = "/home"; // Regular user dashboard
           }
         } else {
           // Show error message if login failed
