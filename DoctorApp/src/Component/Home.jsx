@@ -94,17 +94,83 @@ function Landing() {
       }
     };
 
+    const fetchFavorites = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+  
+      try {
+        const response = await fetch("http://localhost:5000/api/favorites", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+        });
+  
+        const data = await response.json();
+        if (data.status === "ok") {
+          setFavorites(data.data); // Set favorites from the backend
+        } else {
+          console.error("Failed to fetch favorites:", data.error);
+        }
+      } catch (error) {
+        console.error("Error fetching favorites:", error);
+      }
+    };
+  
+    fetchFavorites();
     fetchUserData();
     fetchAppointments();
   }, []);
 
-  const handleFavoriteClick = (doctor) => {
-    if (favorites.some((fav) => fav.name === doctor.name)) {
-      // Remove from favorites
-      setFavorites(favorites.filter((fav) => fav.name !== doctor.name));
-    } else {
-      // Add to favorites
-      setFavorites([...favorites, doctor]);
+  const handleFavoriteClick = async (doctor) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No token found");
+      return;
+    }
+  
+    try {
+      if (favorites.some((fav) => fav.name === doctor.name)) {
+        // Remove from favorites
+        const response = await fetch("http://localhost:5000/api/favorites/remove", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+          body: JSON.stringify({ doctor }),
+        });
+  
+        const data = await response.json();
+        if (data.status === "ok") {
+          setFavorites(data.data); // Update favorites from the backend
+        } else {
+          console.error("Failed to remove favorite:", data.error);
+        }
+      } else {
+        // Add to favorites
+        const response = await fetch("http://localhost:5000/api/favorites/add", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+          body: JSON.stringify({ doctor }),
+        });
+  
+        const data = await response.json();
+        if (data.status === "ok") {
+          setFavorites(data.data); // Update favorites from the backend
+        } else {
+          console.error("Failed to add favorite:", data.error);
+        }
+      }
+    } catch (error) {
+      console.error("Error updating favorites:", error);
     }
   };
 

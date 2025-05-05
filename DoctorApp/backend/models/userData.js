@@ -11,6 +11,7 @@ const UserDetailSchema = new mongoose.Schema(
       default:
         "https://res.cloudinary.com/dzrbxikc8/image/upload/v1745256288/default-profile-account-unknown-icon-black-silhouette-free-vector_jbrjhz.jpg",
     },
+    favorites: {  type: Array, default: [] },
   },
   {
     collection: "users",
