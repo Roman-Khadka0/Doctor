@@ -7,6 +7,7 @@ import Doctor2 from "../assets/Doctor2.jpg";
 import Doctor4 from "../assets/Doctor4.jpg";
 import Dope from "../assets/Dope.jpg";
 import logo from "../assets/Logo.png"
+import Navbar from '../Component/Navbar'
 
 const doctors = [
   {
@@ -136,51 +137,8 @@ const Dashboard = () => {
   return (
     <div className="bg-gray-100 min-h-screen">
       {/* Navbar */}
-      <nav className="bg-[#258C9B] p-4 flex justify-between items-center text-white">
-  {/* Left side: Logo + Title */}
-  <div className="flex items-center space-x-3">
-    <img src={logo} alt="EasyDoc Logo" className="h-10 w-auto" />
-    <div className="text-2xl font-bold">EASY DOC</div>
-  </div>
+      <Navbar logo={logo}  />
 
-  {/* Center Nav Links */}
-  <div className="space-x-6 text-lg">
-    <Link to="/" className="hover:text-gray-300">HOME</Link>
-    <Link to="/dashboard" className="hover:text-gray-300">DOCTORS</Link>
-    <Link to="/appointment" className="hover:text-gray-300">APPOINTMENTS</Link>
-  </div>
-
-  {/* Right side: User Avatar and Dropdown */}
-  <div className="relative">
-    <button
-      onClick={() => setShowDropdown(!showDropdown)}
-      className="w-10 h-10 rounded-full overflow-hidden border-2 border-white focus:outline-none"
-    >
-      <img
-        src="https://i.pravatar.cc/300" // Replace with user's profile image if available
-        alt="User avatar"
-        className="w-full h-full object-cover"
-      />
-    </button>
-
-    {showDropdown && (
-      <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-10">
-        <Link
-          to="/PProfile"
-          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-        >
-          Edit Account
-        </Link>
-        <button
-          onClick={handleLogout}
-          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-        >
-          Logout
-        </button>
-      </div>
-    )}
-  </div>
-</nav>
 
       {/* Welcome */}
       <div className="p-6 text-xl font-semibold">Welcome! {user ? user.name : "Loading..."}</div>
