@@ -8,14 +8,48 @@ const NavItem = ({ text }) => (
   </span>
 );
 
-const Header = ({ logo, user = {}, handleLogout }) => {
+const Header = ({ logo, handleLogout }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
-  const fallbackAvatar = "https://via.placeholder.com/40?text=U";
+  const [user, setUser] = useState({});
+  const fallbackAvatar = "https://res.cloudinary.com/dzrbxikc8/image/upload/v1745256288/default-profile-account-unknown-icon-black-silhouette-free-vector_jbrjhz.jpg"; // Replace with your preferred fallback
 
   // Close dropdown when clicking outside
   useEffect(() => {
+
+    const fetchUserDetails = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No token found. User is not logged in.");
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:5000/api/userdetails/get", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+        });
+
+        const data = await response.json();
+        if (data.status === "ok") {
+          setUser({
+            name: data.data.name,
+            avatar: data.data.profilePicture, // Fetch profile picture from the backend
+          });
+        } else {
+          console.error("Failed to fetch user details:", data.error);
+        }
+      } catch (error) {
+        console.error("Error fetching user details:", error);
+      }
+    };
+
+    fetchUserDetails();
+
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
