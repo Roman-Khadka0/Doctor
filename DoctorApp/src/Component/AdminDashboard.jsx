@@ -1,8 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
+  const [search, setSearch] = useState("");
   const [doctorSearch, setDoctorSearch] = useState("");
+  const [showDoctorModal, setShowDoctorModal] = useState(false);
+  const [newDoctor, setNewDoctor] = useState({
+    name: "",
+    image: "",
+    specialty: "",
+    phone: "",
+    description: "",
+    rating: "",
+    location: "",
+  });
+
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     fetchUsers();
@@ -16,7 +29,7 @@ const AdminDashboard = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/admin/users1", {
+      const response = await fetch("http://localhost:5000/api/admin/users", {
         headers: {
           "Content-Type": "application/json",
           Authorization: token,
@@ -34,12 +47,87 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleDelete = async (userId) => {
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
+
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(`http://localhost:5000/api/admin/users/${userId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+      });
+
+      const result = await response.json();
+      if (result.status === "ok") {
+        alert("User deleted successfully!");
+        fetchUsers();
+      } else {
+        alert(result.error);
+      }
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
+  };
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setNewDoctor({ ...newDoctor, image: reader.result });
+    };
+    if (file) reader.readAsDataURL(file);
+  };
+
+  const handleAddDoctor = async () => {
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await fetch("http://localhost:5000/api/admin/doctors", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+        body: JSON.stringify(newDoctor),
+      });
+
+      const data = await response.json();
+      if (data.status === "ok") {
+        alert("Doctor added successfully!");
+        setShowDoctorModal(false);
+        setNewDoctor({
+          name: "",
+          image: "",
+          specialty: "",
+          phone: "",
+          description: "",
+          rating: "",
+          location: "",
+        });
+        fetchUsers();
+      } else {
+        alert(data.error);
+      }
+    } catch (error) {
+      console.error("Error adding doctor:", error);
+    }
+  };
+
+  const filteredUsers = users.filter(
+    (user) =>
+      user.name.toLowerCase().includes(search.toLowerCase()) ||
+      user.email.toLowerCase().includes(search.toLowerCase())
+  );
+
   const filteredDoctors = users
     .filter((user) => user.role === "doctor")
     .filter(
       (user) =>
         user.name.toLowerCase().includes(doctorSearch.toLowerCase()) ||
-        user.email.toLowerCase().includes(doctorSearch.toLowerCase())
+        user.specialty?.toLowerCase().includes(doctorSearch.toLowerCase())
     );
 
   return (
@@ -48,28 +136,61 @@ const AdminDashboard = () => {
         <h1 className="text-4xl font-bold text-[#258C9B] mb-8">Admin Dashboard</h1>
 
         <div className="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-          {/* Users Summary Card */}
+          {/* Users */}
           <div className="bg-white p-6 rounded-2xl shadow-2xl">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-semibold text-[#258C9B]">👥 Users</h2>
-              <a
-                href="/admin/users"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#258C9B] underline hover:text-[#1e7683] transition"
-              >
-                See All
-              </a>
+            <h2 className="text-2xl font-semibold text-[#258C9B] mb-4">👥 Users</h2>
+            <input
+              type="text"
+              placeholder="🔍 Search users by name or email..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full mb-4 px-4 py-2 border border-[#258C9B] rounded-xl"
+            />
+            <div className="overflow-x-auto border rounded-lg">
+              <table className="min-w-full text-sm">
+                <thead className="bg-[#c4edf0] text-[#258C9B]">
+                  <tr>
+                    <th className="py-2 px-4">Name</th>
+                    <th className="py-2 px-4">Email</th>
+                    <th className="py-2 px-4">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredUsers.length > 0 ? (
+                    filteredUsers.map((user) => (
+                      <tr key={user._id} className="border-t hover:bg-gray-50">
+                        <td className="py-2 px-4">{user.name}</td>
+                        <td className="py-2 px-4">{user.email}</td>
+                        <td className="py-2 px-4">
+                          <button
+                            onClick={() => handleDelete(user._id)}
+                            className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="3" className="text-center py-4 text-gray-500">
+                        No users found.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
-            <p className="text-4xl font-bold text-[#258C9B]">{users.length}</p>
-            <p className="text-gray-600 mt-2">Total registered users</p>
           </div>
 
-          {/* Doctors Card */}
+          {/* Doctors */}
           <div className="bg-white p-6 rounded-2xl shadow-2xl">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-semibold text-[#258C9B]">🩺 Doctors</h2>
-              <button className="bg-[#258C9B] text-white px-4 py-1 rounded-lg hover:bg-[#1e7683] transition">
+              <button
+                onClick={() => setShowDoctorModal(true)}
+                className="bg-[#258C9B] text-white px-4 py-1 rounded hover:bg-[#1e7683]"
+              >
                 Add Doctor
               </button>
             </div>
@@ -78,22 +199,22 @@ const AdminDashboard = () => {
               placeholder="🔍 Search doctors..."
               value={doctorSearch}
               onChange={(e) => setDoctorSearch(e.target.value)}
-              className="w-full mb-4 px-4 py-2 border border-[#258C9B] rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-[#258C9B]"
+              className="w-full mb-4 px-4 py-2 border border-[#258C9B] rounded-xl"
             />
             <div className="overflow-x-auto border rounded-lg">
-              <table className="min-w-full text-sm text-gray-700">
-                <thead className="bg-[#c4edf0] text-[#258C9B] text-left">
+              <table className="min-w-full text-sm">
+                <thead className="bg-[#c4edf0] text-[#258C9B]">
                   <tr>
                     <th className="py-2 px-4">Name</th>
-                    <th className="py-2 px-4">Email</th>
+                    <th className="py-2 px-4">Specialty</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredDoctors.length > 0 ? (
                     filteredDoctors.map((doc) => (
-                      <tr key={doc._id} className="border-t hover:bg-gray-50 transition-all">
+                      <tr key={doc._id} className="border-t hover:bg-gray-50">
                         <td className="py-2 px-4">{doc.name}</td>
-                        <td className="py-2 px-4">{doc.email}</td>
+                        <td className="py-2 px-4">{doc.specialty || "N/A"}</td>
                       </tr>
                     ))
                   ) : (
@@ -106,9 +227,108 @@ const AdminDashboard = () => {
                 </tbody>
               </table>
             </div>
+
+            {/* Add Doctor Modal */}
+            {showDoctorModal && (
+              <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
+                <div className="bg-white rounded-xl p-8 w-full max-w-xl shadow-xl relative">
+                  <h2 className="text-2xl font-bold mb-6 text-[#258C9B] text-center">Add New Doctor</h2>
+
+                  <div className="flex flex-col items-center gap-5">
+                    {/* Clickable image upload */}
+                    <div className="relative">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                      />
+                      <div
+                        onClick={() => fileInputRef.current.click()}
+                        className="cursor-pointer"
+                      >
+                        {newDoctor.image ? (
+                          <img
+                            src={newDoctor.image}
+                            alt="Doctor"
+                            className="h-24 w-24 rounded-full object-cover border-2 border-[#258C9B]"
+                          />
+                        ) : (
+                          <div className="h-24 w-24 flex items-center justify-center rounded-full bg-gray-100 text-gray-400 border-2 border-dashed border-[#258C9B]">
+                            Upload
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Form */}
+                    <div className="w-full space-y-4">
+                      <input
+                        type="text"
+                        placeholder="Name"
+                        value={newDoctor.name}
+                        onChange={(e) => setNewDoctor({ ...newDoctor, name: e.target.value })}
+                        className="w-full px-4 py-2 border border-gray-300 rounded"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Specialty"
+                        value={newDoctor.specialty}
+                        onChange={(e) => setNewDoctor({ ...newDoctor, specialty: e.target.value })}
+                        className="w-full px-4 py-2 border border-gray-300 rounded"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Phone"
+                        value={newDoctor.phone}
+                        onChange={(e) => setNewDoctor({ ...newDoctor, phone: e.target.value })}
+                        className="w-full px-4 py-2 border border-gray-300 rounded"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Rating"
+                        value={newDoctor.rating}
+                        onChange={(e) => setNewDoctor({ ...newDoctor, rating: e.target.value })}
+                        className="w-full px-4 py-2 border border-gray-300 rounded"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Location"
+                        value={newDoctor.location}
+                        onChange={(e) => setNewDoctor({ ...newDoctor, location: e.target.value })}
+                        className="w-full px-4 py-2 border border-gray-300 rounded"
+                      />
+                      <textarea
+                        placeholder="Description"
+                        value={newDoctor.description}
+                        onChange={(e) => setNewDoctor({ ...newDoctor, description: e.target.value })}
+                        className="w-full px-4 py-2 border border-gray-300 rounded resize-none h-24"
+                      />
+                    </div>
+
+                    {/* Buttons */}
+                    <div className="flex justify-end w-full gap-4 pt-4">
+                      <button
+                        onClick={() => setShowDoctorModal(false)}
+                        className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handleAddDoctor}
+                        className="px-4 py-2 bg-[#258C9B] text-white rounded hover:bg-[#1e7683]"
+                      >
+                        Add Doctor
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Appointments Card */}
+          {/* Appointments Placeholder */}
           <div className="bg-white p-6 rounded-2xl shadow-2xl">
             <h2 className="text-2xl font-semibold text-[#258C9B] mb-4">📅 Appointments</h2>
             <p className="text-gray-600">This section will display appointment schedules and history.</p>
