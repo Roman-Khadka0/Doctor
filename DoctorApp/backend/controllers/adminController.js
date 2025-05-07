@@ -1,4 +1,5 @@
 const User = require("../models/userData");
+const Appointment = require("../models/appointment");
 
 const deleteUser = async (req, res) => {
   const { id } = req.params;
@@ -15,4 +16,14 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { deleteUser };
+const getAppointments = async (req, res) => {
+    try {
+      const appointments = await Appointment.find(); // Fetch all appointments from the database
+      res.json({ status: "ok", data: appointments });
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+      res.status(500).json({ error: "Failed to fetch appointments" });
+    }
+  };
+
+module.exports = { deleteUser, getAppointments };

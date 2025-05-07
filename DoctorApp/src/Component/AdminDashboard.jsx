@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [doctors, setDoctors] = useState([]);
+  const [appointments, setAppointments] = useState([]);
   const [search, setSearch] = useState("");
   const [doctorSearch, setDoctorSearch] = useState("");
   const [showDoctorModal, setShowDoctorModal] = useState(false);
@@ -21,6 +22,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     fetchUsers();
     fetchDoctors();
+    fetchAppointments();
   }, []);
 
   // Fetch users from backend API
@@ -181,6 +183,28 @@ const AdminDashboard = () => {
       }
     } catch (error) {
       console.error("Error removing doctor:", error);
+    }
+  };
+
+  // Fetch appointments from backend API
+  const fetchAppointments = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch("http://localhost:5000/api/admin/appointments", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+      });
+  
+      const data = await response.json();
+      if (data.status === "ok") {
+        setAppointments(data.data); // Set the list of appointments
+      } else {
+        console.error("Failed to fetch appointments:", data.error);
+      }
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
     }
   };
 
@@ -394,7 +418,34 @@ const AdminDashboard = () => {
           {/* Appointments Placeholder */}
           <div className="bg-white p-6 rounded-2xl shadow-2xl">
             <h2 className="text-2xl font-semibold text-[#258C9B] mb-4">📅 Appointments</h2>
-            <p className="text-gray-600">This section will display appointment schedules and history.</p>
+            <div className="overflow-x-auto border rounded-lg">
+              <table className="min-w-full text-sm">
+                <thead className="bg-[#c4edf0] text-[#258C9B]">
+                  <tr>
+                    <th className="py-2 px-4">Patient Name</th>
+                    <th className="py-2 px-4">Doctor</th>
+                    <th className="py-2 px-4">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {appointments.length > 0 ? (
+                    appointments.map((appointment) => (
+                      <tr key={appointment._id} className="border-t hover:bg-gray-50">
+                        <td className="py-2 px-4">{appointment.name}</td>
+                        <td className="py-2 px-4">{appointment.doctor}</td>
+                        <td className="py-2 px-4">{appointment.date}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5" className="text-center py-4 text-gray-500">
+                        No appointments found.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
