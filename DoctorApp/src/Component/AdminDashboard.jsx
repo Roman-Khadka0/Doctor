@@ -18,40 +18,40 @@ const AdminDashboard = () => {
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-
-    // Fetch users when the component mounts
-    const fetchUsers = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        alert("Access denied. Please log in as an admin.");
-        return;
-      }
-    
-      try {
-        const response = await fetch("http://localhost:5000/api/admin/users", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: token,
-          },
-        });
-    
-        const data = await response.json();
-        if (data.status === "ok") {
-          const filteredUsers = data.data.filter((user) => user.role === "user"); // Filter users with role 'user'
-          setUsers(filteredUsers);
-        } else {
-          alert(data.error);
-        }
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
     fetchUsers();
   }, []);
 
-  const handleDelete = async (userId) => {
-    if (!window.confirm("Are you sure you want to delete this user?")) return;
+  // Fetch users when the component mounts
+  const fetchUsers = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Access denied. Please log in as an admin.");
+      return;
+    }
+  
+    try {
+      const response = await fetch("http://localhost:5000/api/admin/users", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+      });
+  
+      const data = await response.json();
+      if (data.status === "ok") {
+        const filteredUsers = data.data.filter((user) => user.role === "user"); // Filter users with role 'user'
+        setUsers(filteredUsers);
+      } else {
+        alert(data.error);
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
 
+  const handleDeleteUser = async (userId) => {
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
+  
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(`http://localhost:5000/api/admin/users/${userId}`, {
@@ -61,11 +61,11 @@ const AdminDashboard = () => {
           Authorization: token,
         },
       });
-
+  
       const result = await response.json();
       if (result.status === "ok") {
         alert("User deleted successfully!");
-        fetchUsers();
+        fetchUsers(); // Refresh the user list
       } else {
         alert(result.error);
       }
@@ -200,7 +200,7 @@ const AdminDashboard = () => {
                         <td className="py-2 px-4">{user.email}</td>
                         <td className="py-2 px-4">
                           <button
-                            onClick={() => handleDelete(user._id)}
+                            onClick={() => handleDeleteUser(user._id)}
                             className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                           >
                             Delete

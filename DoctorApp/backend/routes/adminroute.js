@@ -1,5 +1,6 @@
 const express = require("express");
 const isAdmin = require("../middlewares/adminauth"); // Middleware to check if the user is an admin
+const { deleteUser } = require("../controllers/adminController");
 const User = require("../models/userData");
 
 const router = express.Router();
@@ -13,6 +14,9 @@ router.get("/users", isAdmin, async (req, res) => {
     res.status(500).json({ error: "Failed to fetch users." });
   }
 });
+
+// Delete a user by ID
+router.delete("/users/:id", isAdmin, deleteUser);
 
 // Add more admin-specific routes here
 
