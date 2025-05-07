@@ -1,8 +1,101 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import logo from '../assets/logo.png';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import Navbar from "../Component/Navbar"
+import Logo from "../assets/Logo.png";
 
-const Appointment = () => {
+const AppointmentPage = () => {
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [appointments, setAppointments] = useState([]);
+
+  const [formData, setFormData] = useState({
+    doctor: "",
+    date: "",
+    time: "",
+    name: "",
+    email: "",
+    reason: "",
+  });
+
+  const doctors = [
+    { id: 1, name: "Dr. Smith", specialty: "Cardiologist" },
+    { id: 2, name: "Dr. Jane", specialty: "Dermatologist" },
+    { id: 3, name: "Dr. Kumar", specialty: "Neurologist" },
+  ];
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/login";
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please log in to book an appointment.");
+      window.location.href = "/login";
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/api/appointments/book", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (data.status === "ok") {
+        alert("Appointment booked successfully!");
+        setFormData({
+          doctor: "",
+          date: "",
+          time: "",
+          name: "",
+          email: "",
+          reason: "",
+        });
+        fetchAppointments(); // Refresh appointment list
+        setShowForm(false);  // Hide form after booking
+      } else {
+        alert(data.error);
+      }
+    } catch (error) {
+      console.error("Error booking appointment:", error);
+    }
+  };
+
+  const fetchAppointments = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const response = await fetch("http://localhost:5000/api/appointments", {
+        headers: {
+          Authorization: token,
+        },
+      });
+      const data = await response.json();
+      if (data.status === "ok") {
+        setAppointments(data.appointments); // Make sure your backend returns `appointments`
+      }
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAppointments();
+  }, []);
+
   const [bookedAppointments, setBookedAppointments] = useState([
     {
       id: 1,
@@ -33,127 +126,126 @@ const Appointment = () => {
     },
   ]);
 
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [showHistory, setShowHistory] = useState(false);
-  const [newAppointment, setNewAppointment] = useState({
-    name: "",
-    specialty: "",
-    address: "",
-    date: "",
-    time: "",
-    image: ""
-  });
-
-  const dropdownRef = useRef(null);
-  const navigate = useNavigate();
-
-  const user = { avatar: "https://randomuser.me/api/portraits/men/32.jpg" };
-  const fallbackAvatar = "https://i.ibb.co/MBtjqXQ/no-avatar.gif";
-
-  const handleLogoutClick = () => {
-    console.log("Logging out...");
-    navigate("/login");
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowDropdown(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleCancel = (id) => {
-    const updated = bookedAppointments.filter(app => app.id !== id);
-    setBookedAppointments(updated);
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-
-    if (name === "name") {
-      const selectedDoctor = bookedAppointments.find(doc => doc.name === value);
-      if (selectedDoctor) {
-        setNewAppointment({
-          ...newAppointment,
-          name: value,
-          specialty: selectedDoctor.specialty,
-          address: selectedDoctor.address,
-          image: selectedDoctor.image,
-        });
-        return;
-      }
-    }
-
-    setNewAppointment((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleBookAppointment = (e) => {
-    e.preventDefault();
-    const newId = bookedAppointments.length + 1;
-    const appointmentToAdd = { ...newAppointment, id: newId };
-    setBookedAppointments([...bookedAppointments, appointmentToAdd]);
-    setNewAppointment({ name: "", specialty: "", address: "", date: "", time: "", image: "" });
-  };
-
   return (
-    <>
-      {/* Navbar */}
-      <nav className="bg-[#4AA8B5] p-4 text-white">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-12">
-            <div className="flex-shrink-0">
-              <img src={logo} alt="EasyDoc Logo" className="h-12 w-12 bg-[#00A9BD] p-2 rounded" />
+    <div className="min-h-screen bg-gray-100">
+    <Navbar logo={Logo}  />
+
+    <div className="min-h-screen flex flex-col items-center px-4 py-12 bg-cover bg-center">
+      {/* Header/Nav Bar */}
+
+      {/* Toggle Button */}
+      <div className="mt-24">
+        <button
+          onClick={() => setShowForm((prev) => !prev)}
+          className="border border-[#258C9B] text-[#258C9B] px-6 py-2 rounded-md font-medium hover:bg-[#258C9B] hover:text-white transition"
+        >
+          {showForm ? "Hide Appointment Form" : "Book an Appointment"}
+        </button>
+      </div>
+
+      {/* Conditional Form */}
+      {showForm && (
+        <div className="bg-white bg-opacity-90 p-8 rounded-2xl shadow-xl w-full max-w-2xl mt-10">
+          <h1 className="text-3xl font-bold text-center text-[#258C9B] mb-6">
+            Book a Doctor Appointment
+          </h1>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label className="block mb-1 font-medium text-gray-700">Select Doctor</label>
+              <select
+                name="doctor"
+                value={formData.doctor}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#258C9B]"
+              >
+                <option value="">Choose a doctor</option>
+                {doctors.map((doc) => (
+                  <option key={doc.id} value={doc.name}>
+                    {doc.name} - {doc.specialty}
+                  </option>
+                ))}
+              </select>
             </div>
-            <div className="hidden lg:flex space-x-8 text-xl">
-              <Link to="/home" className="hover:text-gray-300">Home</Link>
-              <Link to="/docdash" className="hover:text-gray-300">Doctors</Link>
-              <Link to="/appointment" className="hover:text-gray-300">Appointments</Link>
-            </div>
-          </div>
-          <div className="relative" ref={dropdownRef}>
-            <img
-              src={user?.avatar || fallbackAvatar}
-              alt="Profile"
-              onClick={() => setShowDropdown(!showDropdown)}
-              className="w-10 h-10 rounded-full border-2 border-white hover:border-gray-300 cursor-pointer transition"
-            />
-            {showDropdown && (
-              <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-10">
-                <Link
-                  to="/PProfile"
-                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Edit Account
-                </Link>
-                <button
-                  onClick={handleLogoutClick}
-                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Logout
-                </button>
+
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1">
+                <label className="block mb-1 font-medium text-gray-700">Select Date</label>
+                <input
+                  type="date"
+                  name="date"
+                  value={formData.date}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#258C9B]"
+                />
               </div>
-            )}
-          </div>
-        </div>
-      </nav>
+              <div className="flex-1">
+                <label className="block mb-1 font-medium text-gray-700">Select Time</label>
+                <input
+                  type="time"
+                  name="time"
+                  value={formData.time}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#258C9B]"
+                />
+              </div>
+            </div>
 
-      {/* Main Page Content */}
-      <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-bold text-[#258C9B]">APPOINTMENTS</h2>
+            <div>
+              <label className="block mb-1 font-medium text-gray-700">Your Name</label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                placeholder="Roman Khadka"
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#258C9B]"
+              />
+            </div>
+
+            <div>
+              <label className="block mb-1 font-medium text-gray-700">Email Address</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                placeholder="Romann@example.com"
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#258C9B]"
+              />
+            </div>
+
+            <div>
+              <label className="block mb-1 font-medium text-gray-700">Reason for Visit</label>
+              <textarea
+                name="reason"
+                value={formData.reason}
+                onChange={handleChange}
+                rows="3"
+                placeholder="Short description"
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#258C9B]"
+              />
+            </div>
+
             <button
-              onClick={() => setShowHistory(true)}
-              className="border border-[#258C9B] text-[#258C9B] px-4 py-2 rounded-md font-medium hover:bg-[#258C9B] hover:text-white transition"
+              type="submit"
+              className="w-full bg-[#258C9B] text-white py-3 rounded-lg font-semibold hover:bg-[#1e6c78] transition"
             >
-              HISTORY AND RECORDS
+              Book Appointment
             </button>
-          </div>
+          </form>
+        </div>
+      )}
 
-          {bookedAppointments.length === 0 ? (
+      <br />
+
+      {/* Booked Appointments Section */}
+      {bookedAppointments.length === 0 ? (
             <p className="text-center text-gray-500">No booked appointments.</p>
           ) : (
             bookedAppointments.map((appointment) => (
@@ -188,114 +280,9 @@ const Appointment = () => {
               </div>
             ))
           )}
-
-          {/* Booking Form */}
-          <div className="bg-white shadow-md rounded-xl p-8 mt-12">
-            <h2 className="text-2xl font-bold mb-6 text-[#258C9B]">Book a New Appointment</h2>
-            <form onSubmit={handleBookAppointment} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Doctor Dropdown */}
-                <select
-                  name="name"
-                  value={newAppointment.name}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full border rounded px-4 py-2"
-                >
-                  <option value="" disabled>Select Doctor</option>
-                  {bookedAppointments.map((doc) => (
-                    <option key={doc.id} value={doc.name}>
-                      {doc.name}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  type="text"
-                  name="specialty"
-                  placeholder="Specialty"
-                  value={newAppointment.specialty}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full border rounded px-4 py-2"
-                />
-                <input
-                  type="text"
-                  name="address"
-                  placeholder="Address"
-                  value={newAppointment.address}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full border rounded px-4 py-2"
-                />
-                <input
-                  type="text"
-                  name="image"
-                  placeholder="Image URL"
-                  value={newAppointment.image}
-                  onChange={handleInputChange}
-                  className="w-full border rounded px-4 py-2"
-                />
-                <input
-                  type="date"
-                  name="date"
-                  value={newAppointment.date}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full border rounded px-4 py-2"
-                />
-                <input
-                  type="time"
-                  name="time"
-                  value={newAppointment.time}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full border rounded px-4 py-2"
-                />
-              </div>
-              <div className="pt-4">
-                <button
-                  type="submit"
-                  className="bg-[#258C9B] text-white px-6 py-2 rounded-md font-semibold hover:bg-[#1c6b75] transition"
-                >
-                  Book Appointment
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-
-      {/* History Modal */}
-      {showHistory && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm bg-white bg-opacity-20">
-          <div className="bg-white w-full max-w-md rounded-lg shadow-lg p-6 relative">
-            <h3 className="text-2xl font-bold mb-4 text-[#258C9B]">Previous Appointments</h3>
-            {bookedAppointments.length > 0 ? (
-              <ul className="space-y-4">
-                {bookedAppointments.map((appt) => (
-                  <li key={appt.id} className="border-b pb-2">
-                    <p className="font-semibold">{appt.name}</p>
-                    <p className="text-sm text-gray-600">{appt.specialty}</p>
-                    <p className="text-sm text-gray-600">
-                      {appt.date} at {appt.time}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-gray-500">No previous records found.</p>
-            )}
-            <button
-              onClick={() => setShowHistory(false)}
-              className="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-xl"
-            >
-              &times;
-            </button>
-          </div>
-        </div>
-      )}
-    </>
+    </div>
+    </div>
   );
 };
 
-export default Appointment;
+export default AppointmentPage;
