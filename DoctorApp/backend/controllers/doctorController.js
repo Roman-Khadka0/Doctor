@@ -13,18 +13,22 @@ const getDoctors = async (req, res) => {
 
 // Add a new doctor
 const addDoctor = async (req, res) => {
-    const { name, specialty, phone, rating, hospital, about } = req.body;
-    const photo = req.file ? req.file.path : ""; // Get the uploaded photo URL from Cloudinary
-  
-    try {
-      const newDoctor = new Doctor({ name, photo, specialty, phone, rating, hospital, about });
-      await newDoctor.save();
-      res.json({ status: "ok", message: "Doctor added successfully", data: newDoctor });
-    } catch (error) {
-      console.error("Error adding doctor:", error);
-      res.status(500).json({ error: "Failed to add doctor" });
-    }
-  };
+  const { name, specialty, phone, rating, hospital, about } = req.body;
+  const photo = req.file ? req.file.path : ""; // Get the uploaded photo URL
+
+  if (!name || !specialty || !phone || !hospital || !about) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+
+  try {
+    const newDoctor = new Doctor({ name, photo, specialty, phone, rating, hospital, about });
+    await newDoctor.save();
+    res.json({ status: "ok", message: "Doctor added successfully", data: newDoctor });
+  } catch (error) {
+    console.error("Error adding doctor:", error);
+    res.status(500).json({ error: "Failed to add doctor" });
+  }
+};
 
 // Edit a doctor's information
 const editDoctor = async (req, res) => {

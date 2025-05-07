@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
+  const [doctors, setDoctors] = useState([]);
   const [search, setSearch] = useState("");
   const [doctorSearch, setDoctorSearch] = useState("");
   const [showDoctorModal, setShowDoctorModal] = useState(false);
@@ -19,9 +20,10 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     fetchUsers();
+    fetchDoctors();
   }, []);
 
-  // Fetch users when the component mounts
+  // Fetch users from backend API
   const fetchUsers = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -49,6 +51,7 @@ const AdminDashboard = () => {
     }
   };
 
+  // handle what happens after delete user button is clicked
   const handleDeleteUser = async (userId) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
   
@@ -74,19 +77,21 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setNewDoctor({ ...newDoctor, photo: file }); // Store the file directly
-    }
-  };
+  // Filter users based on search input
+  const filteredUsers = users.filter(
+    (user) =>
+      user.name.toLowerCase().includes(search.toLowerCase()) ||
+      user.email.toLowerCase().includes(search.toLowerCase())
+  );
 
+  // Fetch doctors from backend API
   const fetchDoctors = async () => {
     try {
       const response = await fetch("http://localhost:5000/api/doctors");
       const data = await response.json();
+      console.log(data.data); // Log the response data for debugging
       if (data.status === "ok") {
-        setDoctors(data.data); // Set the list of doctors
+        setDoctors(data.data); // Use setDoctors to update the doctors state
       } else {
         console.error("Failed to fetch doctors:", data.error);
       }
@@ -95,6 +100,14 @@ const AdminDashboard = () => {
     }
   };
 
+  // Filter doctors based on search input
+  const filteredDoctors = doctors.filter(
+      (doctor) =>
+        doctor.name.toLowerCase().includes(doctorSearch.toLowerCase()) ||
+        doctor.specialty?.toLowerCase().includes(doctorSearch.toLowerCase())
+    );
+
+  // Handle adding a new doctor
   const handleAddDoctor = async () => {
     const token = localStorage.getItem("token");
     const formData = new FormData();
@@ -103,7 +116,7 @@ const AdminDashboard = () => {
     formData.append("photo", newDoctor.photo); // Append the photo file
     formData.append("specialty", newDoctor.specialty);
     formData.append("phone", newDoctor.phone);
-    formData.append("rating", newDoctor.rating);
+    formData.append("rating", newDoctor.rating || 0); // Default rating to 0 if not provided
     formData.append("hospital", newDoctor.hospital);
     formData.append("about", newDoctor.about);
   
@@ -111,7 +124,7 @@ const AdminDashboard = () => {
       const response = await fetch("http://localhost:5000/api/doctors", {
         method: "POST",
         headers: {
-          Authorization: token,
+          Authorization: token, // Authorization header
         },
         body: formData, // Send FormData
       });
@@ -119,12 +132,30 @@ const AdminDashboard = () => {
       const data = await response.json();
       if (data.status === "ok") {
         alert("Doctor added successfully!");
+        setShowDoctorModal(false); // Close the modal
+        setNewDoctor({
+          name: "",
+          photo: "",
+          specialty: "",
+          phone: "",
+          rating: "",
+          hospital: "",
+          about: "",
+        }); // Reset the form
         fetchDoctors(); // Refresh the doctor list
       } else {
         alert(data.error);
       }
     } catch (error) {
       console.error("Error adding doctor:", error);
+    }
+  };
+
+  // Handle image upload
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setNewDoctor({ ...newDoctor, photo: file }); // Store the file directly
     }
   };
 
@@ -152,20 +183,6 @@ const AdminDashboard = () => {
       console.error("Error removing doctor:", error);
     }
   };
-
-  const filteredUsers = users.filter(
-    (user) =>
-      user.name.toLowerCase().includes(search.toLowerCase()) ||
-      user.email.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const filteredDoctors = users
-    .filter((user) => user.role === "doctor")
-    .filter(
-      (user) =>
-        user.name.toLowerCase().includes(doctorSearch.toLowerCase()) ||
-        user.specialty?.toLowerCase().includes(doctorSearch.toLowerCase())
-    );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#e0f7f9] to-white p-6">
@@ -244,6 +261,7 @@ const AdminDashboard = () => {
                   <tr>
                     <th className="py-2 px-4">Name</th>
                     <th className="py-2 px-4">Specialty</th>
+                    <th className="py-2 px-4">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -252,6 +270,14 @@ const AdminDashboard = () => {
                       <tr key={doc._id} className="border-t hover:bg-gray-50">
                         <td className="py-2 px-4">{doc.name}</td>
                         <td className="py-2 px-4">{doc.specialty || "N/A"}</td>
+                        <td className="py-2 px-4">
+                <button
+                  onClick={() => handleDeleteDoctor(doctor._id)}
+                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                >
+                  Delete
+                </button>
+              </td>
                       </tr>
                     ))
                   ) : (
@@ -285,9 +311,9 @@ const AdminDashboard = () => {
                         onClick={() => fileInputRef.current.click()}
                         className="cursor-pointer"
                       >
-                        {newDoctor.image ? (
+                        {newDoctor.photo ? (
                           <img
-                            src={newDoctor.image}
+                            src={URL.createObjectURL(newDoctor.photo)}
                             alt="Doctor"
                             className="h-24 w-24 rounded-full object-cover border-2 border-[#258C9B]"
                           />
