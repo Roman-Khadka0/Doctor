@@ -136,7 +136,7 @@ const AppointmentPage = () => {
           </div>
 
           <nav className="space-x-6 text-lg">
-            <Link to="/" className="hover:text-gray-300">HOME</Link>
+            <Link to="/home" className="hover:text-gray-300">HOME</Link>
             <Link to="/dashboard" className="hover:text-gray-300">DOCTORS</Link>
             <Link to="/appointment" className="hover:text-gray-300">APPOINTMENTS</Link>
           </nav>
