@@ -10,9 +10,9 @@ const AdminDashboard = () => {
     image: "",
     specialty: "",
     phone: "",
-    description: "",
+    about: "",
     rating: "",
-    location: "",
+    hospital: "",
   });
 
   const fileInputRef = useRef(null);
@@ -74,45 +74,80 @@ const AdminDashboard = () => {
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setNewDoctor({ ...newDoctor, image: reader.result });
-    };
-    if (file) reader.readAsDataURL(file);
+    if (file) {
+      setNewDoctor({ ...newDoctor, photo: file }); // Store the file directly
+    }
+  };
+
+  const fetchDoctors = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/doctors");
+      const data = await response.json();
+      if (data.status === "ok") {
+        setDoctors(data.data); // Set the list of doctors
+      } else {
+        console.error("Failed to fetch doctors:", data.error);
+      }
+    } catch (error) {
+      console.error("Error fetching doctors:", error);
+    }
   };
 
   const handleAddDoctor = async () => {
     const token = localStorage.getItem("token");
-
+    const formData = new FormData();
+  
+    formData.append("name", newDoctor.name);
+    formData.append("photo", newDoctor.photo); // Append the photo file
+    formData.append("specialty", newDoctor.specialty);
+    formData.append("phone", newDoctor.phone);
+    formData.append("rating", newDoctor.rating);
+    formData.append("hospital", newDoctor.hospital);
+    formData.append("about", newDoctor.about);
+  
     try {
-      const response = await fetch("http://localhost:5000/api/admin/doctors", {
+      const response = await fetch("http://localhost:5000/api/doctors", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: token,
         },
-        body: JSON.stringify(newDoctor),
+        body: formData, // Send FormData
       });
-
+  
       const data = await response.json();
       if (data.status === "ok") {
         alert("Doctor added successfully!");
-        setShowDoctorModal(false);
-        setNewDoctor({
-          name: "",
-          image: "",
-          specialty: "",
-          phone: "",
-          description: "",
-          rating: "",
-          location: "",
-        });
-        fetchUsers();
+        fetchDoctors(); // Refresh the doctor list
       } else {
         alert(data.error);
       }
     } catch (error) {
       console.error("Error adding doctor:", error);
+    }
+  };
+
+  const handleDeleteDoctor = async (doctorId) => {
+    const token = localStorage.getItem("token");
+    if (!window.confirm("Are you sure you want to delete this doctor?")) return;
+  
+    try {
+      const response = await fetch(`http://localhost:5000/api/doctors/${doctorId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+      });
+  
+      const data = await response.json();
+      if (data.status === "ok") {
+        alert("Doctor removed successfully!");
+        fetchDoctors(); // Refresh the doctor list
+      } else {
+        alert(data.error);
+      }
+    } catch (error) {
+      console.error("Error removing doctor:", error);
     }
   };
 
@@ -294,15 +329,15 @@ const AdminDashboard = () => {
                       />
                       <input
                         type="text"
-                        placeholder="Location"
-                        value={newDoctor.location}
-                        onChange={(e) => setNewDoctor({ ...newDoctor, location: e.target.value })}
+                        placeholder="Hospital"
+                        value={newDoctor.hospital}
+                        onChange={(e) => setNewDoctor({ ...newDoctor, hospital: e.target.value })}
                         className="w-full px-4 py-2 border border-gray-300 rounded"
                       />
                       <textarea
-                        placeholder="Description"
-                        value={newDoctor.description}
-                        onChange={(e) => setNewDoctor({ ...newDoctor, description: e.target.value })}
+                        placeholder="About"
+                        value={newDoctor.about}
+                        onChange={(e) => setNewDoctor({ ...newDoctor, about: e.target.value })}
                         className="w-full px-4 py-2 border border-gray-300 rounded resize-none h-24"
                       />
                     </div>
