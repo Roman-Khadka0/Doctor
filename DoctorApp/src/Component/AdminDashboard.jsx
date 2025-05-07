@@ -18,34 +18,36 @@ const AdminDashboard = () => {
   const fileInputRef = useRef(null);
 
   useEffect(() => {
+
+    // Fetch users when the component mounts
+    const fetchUsers = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Access denied. Please log in as an admin.");
+        return;
+      }
+    
+      try {
+        const response = await fetch("http://localhost:5000/api/admin/users", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+        });
+    
+        const data = await response.json();
+        if (data.status === "ok") {
+          const filteredUsers = data.data.filter((user) => user.role === "user"); // Filter users with role 'user'
+          setUsers(filteredUsers);
+        } else {
+          alert(data.error);
+        }
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
     fetchUsers();
   }, []);
-
-  const fetchUsers = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("Access denied. Please log in as an admin.");
-      return;
-    }
-
-    try {
-      const response = await fetch("http://localhost:5000/api/admin/users", {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token,
-        },
-      });
-
-      const data = await response.json();
-      if (data.status === "ok") {
-        setUsers(data.data);
-      } else {
-        alert(data.error);
-      }
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    }
-  };
 
   const handleDelete = async (userId) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
