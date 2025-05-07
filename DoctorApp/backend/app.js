@@ -6,6 +6,7 @@ const logsignroutes = require("./routes/loginsignuproute"); // importing the rou
 const adminRoutes = require("./routes/adminroute"); // importing the routes for admin
 const appointmentRoutes = require("./routes/appointmentRoutes"); // importing the routes for appointment
 const userDetailsRoutes = require("./routes/userDetailsRoutes"); // importing the routes for user details
+const favoritesRoutes = require("./routes/favouritesRoutes"); // importing the routes for favorites
 
 require("dotenv").config(); // to use environment variables
 
@@ -20,6 +21,7 @@ app.use( '/api/auth', logsignroutes); // using the routes for login and signup
 app.use("/api/admin", adminRoutes); // Add admin routes
 app.use("/api/appointments", appointmentRoutes); // Add appointment routes
 app.use("/api/userdetails", userDetailsRoutes); // Add user details routes
+app.use("/api/favorites", favoritesRoutes); // Add favorites routes
 
 // Connection to the database
 mongoose.connect(process.env.DB_URI)
