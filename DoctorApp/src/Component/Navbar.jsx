@@ -99,6 +99,12 @@ const Header = ({ logo, handleLogout }) => {
               >
                 Edit Account
               </Link>
+              <Link
+                to="/History"
+                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                History
+              </Link>
               <button
                 onClick={handleLogoutClick}
                 className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"

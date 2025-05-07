@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import Navbar from "../Component/Navbar"
 import Logo from "../assets/Logo.png";
 
 const AppointmentPage = () => {
@@ -126,51 +127,11 @@ const AppointmentPage = () => {
   ]);
 
   return (
+    <div className="min-h-screen bg-gray-100">
+    <Navbar logo={Logo}  />
+
     <div className="min-h-screen flex flex-col items-center px-4 py-12 bg-cover bg-center">
       {/* Header/Nav Bar */}
-      <header className="py-4 w-full absolute top-0 left-0 bg-[#258C9B]">
-        <div className="container mx-auto px-4 flex items-center justify-between text-white">
-          <div className="flex items-center space-x-3">
-            <img src={Logo} alt="EasyDoc Logo" className="h-10 w-auto" />
-            <div className="text-2xl font-bold">EASY DOC</div>
-          </div>
-
-          <nav className="space-x-6 text-lg">
-            <Link to="/home" className="hover:text-gray-300">HOME</Link>
-            <Link to="/dashboard" className="hover:text-gray-300">DOCTORS</Link>
-            <Link to="/appointment" className="hover:text-gray-300">APPOINTMENTS</Link>
-          </nav>
-
-          <div className="relative">
-            <button
-              onClick={() => setShowDropdown(!showDropdown)}
-              className="w-10 h-10 rounded-full overflow-hidden border-2 border-white focus:outline-none"
-            >
-              <img
-                src="https://i.pravatar.cc/300"
-                alt="User avatar"
-                className="w-full h-full object-cover"
-              />
-            </button>
-            {showDropdown && (
-              <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-10">
-                <Link
-                  to="/PProfile"
-                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Edit Account
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Logout
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </header>
 
       {/* Toggle Button */}
       <div className="mt-24">
@@ -281,6 +242,8 @@ const AppointmentPage = () => {
         </div>
       )}
 
+      <br />
+
       {/* Booked Appointments Section */}
       {bookedAppointments.length === 0 ? (
             <p className="text-center text-gray-500">No booked appointments.</p>
@@ -317,7 +280,7 @@ const AppointmentPage = () => {
               </div>
             ))
           )}
-
+    </div>
     </div>
   );
 };
