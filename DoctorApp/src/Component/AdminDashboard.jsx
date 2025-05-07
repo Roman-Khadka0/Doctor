@@ -89,7 +89,6 @@ const AdminDashboard = () => {
     try {
       const response = await fetch("http://localhost:5000/api/doctors");
       const data = await response.json();
-      console.log(data.data); // Log the response data for debugging
       if (data.status === "ok") {
         setDoctors(data.data); // Use setDoctors to update the doctors state
       } else {
@@ -159,6 +158,7 @@ const AdminDashboard = () => {
     }
   };
 
+  // Handle deleting a doctor
   const handleDeleteDoctor = async (doctorId) => {
     const token = localStorage.getItem("token");
     if (!window.confirm("Are you sure you want to delete this doctor?")) return;
@@ -272,7 +272,7 @@ const AdminDashboard = () => {
                         <td className="py-2 px-4">{doc.specialty || "N/A"}</td>
                         <td className="py-2 px-4">
                 <button
-                  onClick={() => handleDeleteDoctor(doctor._id)}
+                  onClick={() => handleDeleteDoctor(doc._id)}
                   className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                 >
                   Delete

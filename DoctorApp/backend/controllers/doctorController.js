@@ -59,16 +59,14 @@ const removeDoctor = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const deletedDoctor = await Doctor.findByIdAndDelete(id);
-
-    if (!deletedDoctor) {
+    const doctor = await Doctor.findByIdAndDelete(id);
+    if (!doctor) {
       return res.status(404).json({ error: "Doctor not found" });
     }
-
-    res.json({ status: "ok", message: "Doctor removed successfully" });
+    res.json({ status: "ok", message: "Doctor deleted successfully" });
   } catch (error) {
-    console.error("Error removing doctor:", error);
-    res.status(500).json({ error: "Failed to remove doctor" });
+    console.error("Error deleting doctor:", error);
+    res.status(500).json({ error: "Failed to delete doctor" });
   }
 };
 
