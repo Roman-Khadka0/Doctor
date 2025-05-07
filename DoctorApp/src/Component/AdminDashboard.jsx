@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 
 const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
+  const [doctors, setDoctors] = useState([]);
+  const [appointments, setAppointments] = useState([]);
   const [search, setSearch] = useState("");
   const [doctorSearch, setDoctorSearch] = useState("");
   const [showDoctorModal, setShowDoctorModal] = useState(false);
@@ -10,24 +12,27 @@ const AdminDashboard = () => {
     image: "",
     specialty: "",
     phone: "",
-    description: "",
+    about: "",
     rating: "",
-    location: "",
+    hospital: "",
   });
 
   const fileInputRef = useRef(null);
 
   useEffect(() => {
     fetchUsers();
+    fetchDoctors();
+    fetchAppointments();
   }, []);
 
+  // Fetch users from backend API
   const fetchUsers = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
       alert("Access denied. Please log in as an admin.");
       return;
     }
-
+  
     try {
       const response = await fetch("http://localhost:5000/api/admin/users", {
         headers: {
@@ -35,10 +40,11 @@ const AdminDashboard = () => {
           Authorization: token,
         },
       });
-
+  
       const data = await response.json();
       if (data.status === "ok") {
-        setUsers(data.data);
+        const filteredUsers = data.data.filter((user) => user.role === "user"); // Filter users with role 'user'
+        setUsers(filteredUsers);
       } else {
         alert(data.error);
       }
@@ -47,9 +53,10 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleDelete = async (userId) => {
+  // handle what happens after delete user button is clicked
+  const handleDeleteUser = async (userId) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
-
+  
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(`http://localhost:5000/api/admin/users/${userId}`, {
@@ -59,11 +66,11 @@ const AdminDashboard = () => {
           Authorization: token,
         },
       });
-
+  
       const result = await response.json();
       if (result.status === "ok") {
         alert("User deleted successfully!");
-        fetchUsers();
+        fetchUsers(); // Refresh the user list
       } else {
         alert(result.error);
       }
@@ -72,42 +79,71 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setNewDoctor({ ...newDoctor, image: reader.result });
-    };
-    if (file) reader.readAsDataURL(file);
+  // Filter users based on search input
+  const filteredUsers = users.filter(
+    (user) =>
+      user.name.toLowerCase().includes(search.toLowerCase()) ||
+      user.email.toLowerCase().includes(search.toLowerCase())
+  );
+
+  // Fetch doctors from backend API
+  const fetchDoctors = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/doctors");
+      const data = await response.json();
+      if (data.status === "ok") {
+        setDoctors(data.data); // Use setDoctors to update the doctors state
+      } else {
+        console.error("Failed to fetch doctors:", data.error);
+      }
+    } catch (error) {
+      console.error("Error fetching doctors:", error);
+    }
   };
 
+  // Filter doctors based on search input
+  const filteredDoctors = doctors.filter(
+      (doctor) =>
+        doctor.name.toLowerCase().includes(doctorSearch.toLowerCase()) ||
+        doctor.specialty?.toLowerCase().includes(doctorSearch.toLowerCase())
+    );
+
+  // Handle adding a new doctor
   const handleAddDoctor = async () => {
     const token = localStorage.getItem("token");
-
+    const formData = new FormData();
+  
+    formData.append("name", newDoctor.name);
+    formData.append("photo", newDoctor.photo); // Append the photo file
+    formData.append("specialty", newDoctor.specialty);
+    formData.append("phone", newDoctor.phone);
+    formData.append("rating", newDoctor.rating || 0); // Default rating to 0 if not provided
+    formData.append("hospital", newDoctor.hospital);
+    formData.append("about", newDoctor.about);
+  
     try {
-      const response = await fetch("http://localhost:5000/api/admin/doctors", {
+      const response = await fetch("http://localhost:5000/api/doctors", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          Authorization: token,
+          Authorization: token, // Authorization header
         },
-        body: JSON.stringify(newDoctor),
+        body: formData, // Send FormData
       });
-
+  
       const data = await response.json();
       if (data.status === "ok") {
         alert("Doctor added successfully!");
-        setShowDoctorModal(false);
+        setShowDoctorModal(false); // Close the modal
         setNewDoctor({
           name: "",
-          image: "",
+          photo: "",
           specialty: "",
           phone: "",
-          description: "",
           rating: "",
-          location: "",
-        });
-        fetchUsers();
+          hospital: "",
+          about: "",
+        }); // Reset the form
+        fetchDoctors(); // Refresh the doctor list
       } else {
         alert(data.error);
       }
@@ -116,19 +152,61 @@ const AdminDashboard = () => {
     }
   };
 
-  const filteredUsers = users.filter(
-    (user) =>
-      user.name.toLowerCase().includes(search.toLowerCase()) ||
-      user.email.toLowerCase().includes(search.toLowerCase())
-  );
+  // Handle image upload
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setNewDoctor({ ...newDoctor, photo: file }); // Store the file directly
+    }
+  };
 
-  const filteredDoctors = users
-    .filter((user) => user.role === "doctor")
-    .filter(
-      (user) =>
-        user.name.toLowerCase().includes(doctorSearch.toLowerCase()) ||
-        user.specialty?.toLowerCase().includes(doctorSearch.toLowerCase())
-    );
+  // Handle deleting a doctor
+  const handleDeleteDoctor = async (doctorId) => {
+    const token = localStorage.getItem("token");
+    if (!window.confirm("Are you sure you want to delete this doctor?")) return;
+  
+    try {
+      const response = await fetch(`http://localhost:5000/api/doctors/${doctorId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+      });
+  
+      const data = await response.json();
+      if (data.status === "ok") {
+        alert("Doctor removed successfully!");
+        fetchDoctors(); // Refresh the doctor list
+      } else {
+        alert(data.error);
+      }
+    } catch (error) {
+      console.error("Error removing doctor:", error);
+    }
+  };
+
+  // Fetch appointments from backend API
+  const fetchAppointments = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch("http://localhost:5000/api/admin/appointments", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+      });
+  
+      const data = await response.json();
+      if (data.status === "ok") {
+        setAppointments(data.data); // Set the list of appointments
+      } else {
+        console.error("Failed to fetch appointments:", data.error);
+      }
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#e0f7f9] to-white p-6">
@@ -163,7 +241,7 @@ const AdminDashboard = () => {
                         <td className="py-2 px-4">{user.email}</td>
                         <td className="py-2 px-4">
                           <button
-                            onClick={() => handleDelete(user._id)}
+                            onClick={() => handleDeleteUser(user._id)}
                             className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                           >
                             Delete
@@ -207,6 +285,7 @@ const AdminDashboard = () => {
                   <tr>
                     <th className="py-2 px-4">Name</th>
                     <th className="py-2 px-4">Specialty</th>
+                    <th className="py-2 px-4">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -215,6 +294,14 @@ const AdminDashboard = () => {
                       <tr key={doc._id} className="border-t hover:bg-gray-50">
                         <td className="py-2 px-4">{doc.name}</td>
                         <td className="py-2 px-4">{doc.specialty || "N/A"}</td>
+                        <td className="py-2 px-4">
+                <button
+                  onClick={() => handleDeleteDoctor(doc._id)}
+                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                >
+                  Delete
+                </button>
+              </td>
                       </tr>
                     ))
                   ) : (
@@ -248,9 +335,9 @@ const AdminDashboard = () => {
                         onClick={() => fileInputRef.current.click()}
                         className="cursor-pointer"
                       >
-                        {newDoctor.image ? (
+                        {newDoctor.photo ? (
                           <img
-                            src={newDoctor.image}
+                            src={URL.createObjectURL(newDoctor.photo)}
                             alt="Doctor"
                             className="h-24 w-24 rounded-full object-cover border-2 border-[#258C9B]"
                           />
@@ -294,15 +381,15 @@ const AdminDashboard = () => {
                       />
                       <input
                         type="text"
-                        placeholder="Location"
-                        value={newDoctor.location}
-                        onChange={(e) => setNewDoctor({ ...newDoctor, location: e.target.value })}
+                        placeholder="Hospital"
+                        value={newDoctor.hospital}
+                        onChange={(e) => setNewDoctor({ ...newDoctor, hospital: e.target.value })}
                         className="w-full px-4 py-2 border border-gray-300 rounded"
                       />
                       <textarea
-                        placeholder="Description"
-                        value={newDoctor.description}
-                        onChange={(e) => setNewDoctor({ ...newDoctor, description: e.target.value })}
+                        placeholder="About"
+                        value={newDoctor.about}
+                        onChange={(e) => setNewDoctor({ ...newDoctor, about: e.target.value })}
                         className="w-full px-4 py-2 border border-gray-300 rounded resize-none h-24"
                       />
                     </div>
@@ -331,7 +418,34 @@ const AdminDashboard = () => {
           {/* Appointments Placeholder */}
           <div className="bg-white p-6 rounded-2xl shadow-2xl">
             <h2 className="text-2xl font-semibold text-[#258C9B] mb-4">📅 Appointments</h2>
-            <p className="text-gray-600">This section will display appointment schedules and history.</p>
+            <div className="overflow-x-auto border rounded-lg">
+              <table className="min-w-full text-sm">
+                <thead className="bg-[#c4edf0] text-[#258C9B]">
+                  <tr>
+                    <th className="py-2 px-4">Patient Name</th>
+                    <th className="py-2 px-4">Doctor</th>
+                    <th className="py-2 px-4">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {appointments.length > 0 ? (
+                    appointments.map((appointment) => (
+                      <tr key={appointment._id} className="border-t hover:bg-gray-50">
+                        <td className="py-2 px-4">{appointment.name}</td>
+                        <td className="py-2 px-4">{appointment.doctor}</td>
+                        <td className="py-2 px-4">{appointment.date}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5" className="text-center py-4 text-gray-500">
+                        No appointments found.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>

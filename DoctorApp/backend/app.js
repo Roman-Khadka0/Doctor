@@ -7,6 +7,7 @@ const adminRoutes = require("./routes/adminroute"); // importing the routes for 
 const appointmentRoutes = require("./routes/appointmentRoutes"); // importing the routes for appointment
 const userDetailsRoutes = require("./routes/userDetailsRoutes"); // importing the routes for user details
 const favoritesRoutes = require("./routes/favouritesRoutes"); // importing the routes for favorites
+const doctorRoutes = require("./routes/doctorRoutes"); // importing the routes for doctor
 
 require("dotenv").config(); // to use environment variables
 
@@ -22,6 +23,7 @@ app.use("/api/admin", adminRoutes); // Add admin routes
 app.use("/api/appointments", appointmentRoutes); // Add appointment routes
 app.use("/api/userdetails", userDetailsRoutes); // Add user details routes
 app.use("/api/favorites", favoritesRoutes); // Add favorites routes
+app.use("/api/doctors", doctorRoutes); // Add doctor routes
 
 // Connection to the database
 mongoose.connect(process.env.DB_URI)
