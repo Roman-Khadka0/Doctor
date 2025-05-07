@@ -1,134 +1,125 @@
-// Import necessary modules and assets
-import { useState } from "react";
-import Background from "../assets/background.png"; // Background image for page
-import { Link } from "react-router-dom"; // Enables internal routing
-import logo from "../assets/logo.png"; // App logo image
-import Navbar from '../Component/Navbar'
+import React, { useState, useRef, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import logo from '../assets/logo.png';
 
-// Sample list of doctors with their specialties
-const doctors = [
-  { id: 1, name: "Dr. Aayush Sharma", specialty: "Cardiologist" },
-  { id: 2, name: "Dr. Bina Thapa", specialty: "Dermatologist" },
-  { id: 3, name: "Dr. Rajiv Koirala", specialty: "Pediatrician" },
-];
+const Appointment = () => {
+  const [bookedAppointments, setBookedAppointments] = useState([
+    {
+      id: 1,
+      name: "Dr. Asha Sharma",
+      specialty: "General physician",
+      address: "Naxal",
+      date: "2025-04-25",
+      time: "08:30",
+      image: "https://randomuser.me/api/portraits/women/44.jpg"
+    },
+    {
+      id: 2,
+      name: "Dr. Hari Sapkota",
+      specialty: "General physician",
+      address: "Naxal",
+      date: "2025-04-25",
+      time: "08:30",
+      image: "https://randomuser.me/api/portraits/men/52.jpg"
+    },
+    {
+      id: 3,
+      name: "Dr. Jima Lahmu Sherpa",
+      specialty: "General physician",
+      address: "Naxal",
+      date: "2025-04-25",
+      time: "08:30",
+      image: "https://randomuser.me/api/portraits/women/61.jpg"
+    },
+  ]);
 
-// Appointment component definition
-export default function Appointment() {
-  // State to manage form input values
-  const [formData, setFormData] = useState({
-    doctor: "",
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [newAppointment, setNewAppointment] = useState({
+    name: "",
+    specialty: "",
+    address: "",
     date: "",
     time: "",
-    name: "",
-    email: "",
-    reason: "",
+    image: ""
   });
 
-  // State for dropdown visibility
-  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+  const navigate = useNavigate();
 
-  // Handles input change and updates form state
-  const handleChange = (e) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
+  const user = { avatar: "https://randomuser.me/api/portraits/men/32.jpg" };
+  const fallbackAvatar = "https://i.ibb.co/MBtjqXQ/no-avatar.gif";
+
+  const handleLogoutClick = () => {
+    console.log("Logging out...");
+    navigate("/login");
   };
 
-  // Handle logout
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    window.location.href = "/login";
-  };
-
-  // Handles form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevents default form submit behavior
-    console.log("Appointment Data:", formData); // Logs current form data
-
-    // Check if user is logged in by checking token
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("Please log in to book an appointment.");
-      window.location.href = "/login"; // Redirect to login if token not found
-      return;
-    }
-
-    try {
-      // Send appointment data to backend API
-      const response = await fetch("http://localhost:5000/api/appointments/book", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token, // Include token in header for authentication
-        },
-        body: JSON.stringify(formData), // Convert form data to JSON
-      });
-
-      const data = await response.json(); // Parse response
-
-      // Check API response
-      if (data.status === "ok") {
-        alert("Appointment booked successfully!");
-        // Reset form after success
-        setFormData({
-          doctor: "",
-          date: "",
-          time: "",
-          name: "",
-          email: "",
-          reason: "",
-        });
-        window.location.href = "/dashboard"; // Redirect to dashboard
-      } else {
-        alert(data.error); // Show error if any
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
       }
-    } catch (error) {
-      console.error("Error booking appointment:", error); // Log error
-    }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleCancel = (id) => {
+    const updated = bookedAppointments.filter(app => app.id !== id);
+    setBookedAppointments(updated);
   };
 
-  // Component render
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "name") {
+      const selectedDoctor = bookedAppointments.find(doc => doc.name === value);
+      if (selectedDoctor) {
+        setNewAppointment({
+          ...newAppointment,
+          name: value,
+          specialty: selectedDoctor.specialty,
+          address: selectedDoctor.address,
+          image: selectedDoctor.image,
+        });
+        return;
+      }
+    }
+
+    setNewAppointment((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleBookAppointment = (e) => {
+    e.preventDefault();
+    const newId = bookedAppointments.length + 1;
+    const appointmentToAdd = { ...newAppointment, id: newId };
+    setBookedAppointments([...bookedAppointments, appointmentToAdd]);
+    setNewAppointment({ name: "", specialty: "", address: "", date: "", time: "", image: "" });
+  };
+
   return (
-    <div
-      className="min-h-screen flex items-center justify-center px-4 py-12 bg-cover bg-center"
-      style={{ backgroundImage: `url(${Background})` }}
-    >
-      {/* Header/Nav Bar */}
-      <header className="py-4 w-full absolute top-0 left-0 bg-[#258C9B]">
-        <div className="container mx-auto px-4 flex items-center justify-between text-white">
-          {/* Left: Logo and Title */}
-          <div className="flex items-center space-x-3">
-            <img src={logo} alt="EasyDoc Logo" className="h-10 w-auto" />
-            <div className="text-2xl font-bold">EASY DOC</div>
+    <>
+      {/* Navbar */}
+      <nav className="bg-[#4AA8B5] p-4 text-white">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center space-x-12">
+            <div className="flex-shrink-0">
+              <img src={logo} alt="EasyDoc Logo" className="h-12 w-12 bg-[#00A9BD] p-2 rounded" />
+            </div>
+            <div className="hidden lg:flex space-x-8 text-xl">
+              <Link to="/home" className="hover:text-gray-300">Home</Link>
+              <Link to="/docdash" className="hover:text-gray-300">Doctors</Link>
+              <Link to="/appointment" className="hover:text-gray-300">Appointments</Link>
+            </div>
           </div>
-
-          {/* Center Nav Links */}
-          <nav className="space-x-6 text-lg">
-            <Link to="/" className="hover:text-gray-300">
-              HOME
-            </Link>
-            <Link to="/dashboard" className="hover:text-gray-300">
-              DOCTORS
-            </Link>
-            <Link to="/appointment" className="hover:text-gray-300">
-              APPOINTMENTS
-            </Link>
-          </nav>
-
-          {/* Right: User Avatar + Dropdown */}
-          <div className="relative">
-            <button
+          <div className="relative" ref={dropdownRef}>
+            <img
+              src={user?.avatar || fallbackAvatar}
+              alt="Profile"
               onClick={() => setShowDropdown(!showDropdown)}
-              className="w-10 h-10 rounded-full overflow-hidden border-2 border-white focus:outline-none"
-            >
-              <img
-                src="https://i.pravatar.cc/300"
-                alt="User avatar"
-                className="w-full h-full object-cover"
-              />
-            </button>
-
+              className="w-10 h-10 rounded-full border-2 border-white hover:border-gray-300 cursor-pointer transition"
+            />
             {showDropdown && (
               <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-10">
                 <Link
@@ -138,7 +129,7 @@ export default function Appointment() {
                   Edit Account
                 </Link>
                 <button
-                  onClick={handleLogout}
+                  onClick={handleLogoutClick}
                   className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Logout
@@ -147,110 +138,164 @@ export default function Appointment() {
             )}
           </div>
         </div>
-      </header>
-      {/* Appointment form container */}
-      <div className="bg-white bg-opacity-90 p-8 rounded-2xl shadow-xl w-full max-w-2xl mt-20">
-        <h1 className="text-3xl font-bold text-center text-[#258C9B] mb-6">
-          Book a Doctor Appointment
-        </h1>
+      </nav>
 
-        {/* Appointment form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Doctor selection dropdown */}
-          <div>
-            <label className="block mb-1 font-medium text-gray-700">Select Doctor</label>
-            <select
-              name="doctor"
-              value={formData.doctor}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#258C9B]"
+      {/* Main Page Content */}
+      <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold text-[#258C9B]">APPOINTMENTS</h2>
+            <button
+              onClick={() => setShowHistory(true)}
+              className="border border-[#258C9B] text-[#258C9B] px-4 py-2 rounded-md font-medium hover:bg-[#258C9B] hover:text-white transition"
             >
-              <option value="">Choose a doctor</option>
-              {doctors.map((doc) => (
-                <option key={doc.id} value={doc.name}>
-                  {doc.name} - {doc.specialty}
-                </option>
-              ))}
-            </select>
+              HISTORY AND RECORDS
+            </button>
           </div>
 
-          {/* Date and Time fields */}
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <label className="block mb-1 font-medium text-gray-700">Select Date</label>
-              <input
-                type="date"
-                name="date"
-                value={formData.date}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#258C9B]"
-              />
-            </div>
-            <div className="flex-1">
-              <label className="block mb-1 font-medium text-gray-700">Select Time</label>
-              <input
-                type="time"
-                name="time"
-                value={formData.time}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#258C9B]"
-              />
-            </div>
-          </div>
+          {bookedAppointments.length === 0 ? (
+            <p className="text-center text-gray-500">No booked appointments.</p>
+          ) : (
+            bookedAppointments.map((appointment) => (
+              <div
+                key={appointment.id}
+                className="bg-white shadow-xl rounded-xl p-10 mb-10 flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0 md:space-x-8"
+              >
+                <div className="flex items-center space-x-8 w-full">
+                  <img
+                    src={appointment.image}
+                    alt={appointment.name}
+                    className="w-32 h-32 object-cover rounded-md shadow"
+                  />
+                  <div className="space-y-3">
+                    <h3 className="text-2xl font-bold text-[#333]">{appointment.name}</h3>
+                    <p className="text-lg text-gray-700">{appointment.specialty}</p>
+                    <p className="text-lg text-gray-700"><strong>Address:</strong> {appointment.address}</p>
+                    <p className="text-lg text-gray-700"><strong>Date & Time:</strong> {appointment.date} | {appointment.time}</p>
+                  </div>
+                </div>
+                <div className="text-center md:text-right space-y-4 w-full md:w-auto">
+                  <div className="text-sm bg-green-100 text-green-700 px-4 py-2 rounded-full inline-block font-medium">
+                    Booked
+                  </div>
+                  <button
+                    onClick={() => handleCancel(appointment.id)}
+                    className="text-md text-red-600 border border-red-500 px-6 py-2 rounded-md hover:bg-red-500 hover:text-white transition font-semibold"
+                  >
+                    Cancel Appointment
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
 
-          {/* Name input */}
-          <div>
-            <label className="block mb-1 font-medium text-gray-700">Your Name</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              placeholder="Roman Khadka"
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#258C9B]"
-            />
+          {/* Booking Form */}
+          <div className="bg-white shadow-md rounded-xl p-8 mt-12">
+            <h2 className="text-2xl font-bold mb-6 text-[#258C9B]">Book a New Appointment</h2>
+            <form onSubmit={handleBookAppointment} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Doctor Dropdown */}
+                <select
+                  name="name"
+                  value={newAppointment.name}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full border rounded px-4 py-2"
+                >
+                  <option value="" disabled>Select Doctor</option>
+                  {bookedAppointments.map((doc) => (
+                    <option key={doc.id} value={doc.name}>
+                      {doc.name}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="text"
+                  name="specialty"
+                  placeholder="Specialty"
+                  value={newAppointment.specialty}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full border rounded px-4 py-2"
+                />
+                <input
+                  type="text"
+                  name="address"
+                  placeholder="Address"
+                  value={newAppointment.address}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full border rounded px-4 py-2"
+                />
+                <input
+                  type="text"
+                  name="image"
+                  placeholder="Image URL"
+                  value={newAppointment.image}
+                  onChange={handleInputChange}
+                  className="w-full border rounded px-4 py-2"
+                />
+                <input
+                  type="date"
+                  name="date"
+                  value={newAppointment.date}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full border rounded px-4 py-2"
+                />
+                <input
+                  type="time"
+                  name="time"
+                  value={newAppointment.time}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full border rounded px-4 py-2"
+                />
+              </div>
+              <div className="pt-4">
+                <button
+                  type="submit"
+                  className="bg-[#258C9B] text-white px-6 py-2 rounded-md font-semibold hover:bg-[#1c6b75] transition"
+                >
+                  Book Appointment
+                </button>
+              </div>
+            </form>
           </div>
-
-          {/* Email input */}
-          <div>
-            <label className="block mb-1 font-medium text-gray-700">Email Address</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              placeholder="Romann@example.com"
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#258C9B]"
-            />
-          </div>
-
-          {/* Reason for visit */}
-          <div>
-            <label className="block mb-1 font-medium text-gray-700">Reason for Visit</label>
-            <textarea
-              name="reason"
-              value={formData.reason}
-              onChange={handleChange}
-              rows="3"
-              placeholder="Short description"
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#258C9B]"
-            />
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full bg-[#258C9B] text-white py-3 rounded-lg font-semibold hover:bg-[#1e6c78] transition"
-          >
-            Book Appointment
-          </button>
-        </form>
+        </div>
       </div>
-    </div>
+
+      {/* History Modal */}
+      {showHistory && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm bg-white bg-opacity-20">
+          <div className="bg-white w-full max-w-md rounded-lg shadow-lg p-6 relative">
+            <h3 className="text-2xl font-bold mb-4 text-[#258C9B]">Previous Appointments</h3>
+            {bookedAppointments.length > 0 ? (
+              <ul className="space-y-4">
+                {bookedAppointments.map((appt) => (
+                  <li key={appt.id} className="border-b pb-2">
+                    <p className="font-semibold">{appt.name}</p>
+                    <p className="text-sm text-gray-600">{appt.specialty}</p>
+                    <p className="text-sm text-gray-600">
+                      {appt.date} at {appt.time}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-500">No previous records found.</p>
+            )}
+            <button
+              onClick={() => setShowHistory(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-xl"
+            >
+              &times;
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
-}
+};
+
+export default Appointment;
