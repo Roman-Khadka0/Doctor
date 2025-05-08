@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { useEffect, useState } from "react";
 import Login from "./Component/Login";
 import SignUp from "./Component/SignUp";
 import Home from "./Component/Home";
@@ -11,6 +10,7 @@ import PProfile from "./Component/PProfile";
 import AdminDashboard from "./Component/AdminDashboard";
 import DocDash from "./Component/DocDash";
 import HomeW from './Component/HomeW'
+import History from "./Component/History";
 
 function App() {
 
@@ -27,6 +27,7 @@ function App() {
         <Route path="/PProfile" element={<PProfile />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/docdash" element={<DocDash />} />
+        <Route path="/History" element={<History />} />
         <Route path="/Home" element={<Home />} />
       </Routes>
     </Router>
