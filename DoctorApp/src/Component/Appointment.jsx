@@ -96,7 +96,7 @@ const AppointmentPage = () => {
       });
       const data = await response.json();
       if (data.status === "ok") {
-        setAppointments(data.data); // Update appointments state with fetched data
+        setAppointments(data.scheduled); // Update appointments state with fetched data
       } else {
         console.error("Error fetching appointments:", data.error);
       }
@@ -256,7 +256,13 @@ const AppointmentPage = () => {
                 <h3 className="text-2xl font-bold text-[#333]">{appointment.doctorId.name}</h3>
                 <p className="text-lg text-gray-700">{appointment.doctorId.specialty}</p>
                 <p className="text-lg text-gray-700"><strong>Hospital:</strong> {appointment.doctorId.hospital}</p>
-                <p className="text-lg text-gray-700"><strong>Date & Time:</strong> {new Date(appointment.date).toLocaleString()}</p>
+                <p className="text-lg text-gray-700"><strong>Date:</strong> {new Date(appointment.date).toLocaleTimeString([], {
+                          month: "long",
+                          day: "2-digit",
+                          weekday: "short",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}</p>
               </div>
             </div>
             <div className="text-center md:text-right space-y-4 w-full md:w-auto">

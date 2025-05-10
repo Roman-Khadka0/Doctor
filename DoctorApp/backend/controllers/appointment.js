@@ -39,6 +39,32 @@ const bookAppointment = async (req, res) => {
       });
     }
 
+    // Check if the same doctor is already booked at the same time
+    const existingAppointment = await Appointment.findOne({
+      doctorId,
+      date: appointmentDate,
+    });
+
+    if (existingAppointment) {
+      return res.status(400).json({
+        status: "error",
+        error: "The doctor is already booked at the selected time. Please choose a different time.",
+      });
+    }
+
+    // Check if the user already has an appointment at the same time
+    const userExistingAppointment = await Appointment.findOne({
+      userId: req.user.id,
+      date: appointmentDate,
+    });
+
+    if (userExistingAppointment) {
+      return res.status(400).json({
+        status: "error",
+        error: "You already have an appointment at the selected time. Please choose a different time.",
+      });
+    }
+
     // Fetch doctor details from the Doctor collection
     const doctor = await Doctor.findById(doctorId);
     if (!doctor) {
@@ -110,7 +136,7 @@ const getUserAppointments = async (req, res) => {
     // Filter appointments to only return those with "Scheduled" status
     const scheduledAppointments = appointments.filter((appointment) => appointment.status === "Scheduled");
 
-    res.json({ status: "ok", data: scheduledAppointments });
+    res.json({ status: "ok", scheduled: scheduledAppointments, all: appointments });
   } catch (error) {
     console.error("Error fetching appointments:", error);
     res.status(500).json({ error: "Failed to fetch appointments" });
