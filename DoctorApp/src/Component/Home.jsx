@@ -81,12 +81,7 @@ function Landing() {
 
         const data = await response.json();
         if (data.status === "ok") {
-          const currentDateTime = new Date(); // Get the current date and time
-          const upcomingAppointments = data.data.filter((appointment) => {
-            const appointmentDateTime = new Date(`${appointment.date}T${appointment.time}`);
-            return appointmentDateTime > currentDateTime; // Filter only future appointments
-          });
-          setAppointments(upcomingAppointments); // Set only upcoming appointments
+          setAppointments(data.data); // Set only upcoming appointments
         } else {
           console.error("Failed to fetch appointments:", data.error);
         }
@@ -221,19 +216,27 @@ function Landing() {
                     <div className="flex items-center">
                       <span className="mr-2 text-blue-500">📅</span>
                       <span>
-                        <strong>Date:</strong> {new Date(appointment.date).toLocaleDateString()}
+                        <strong>Date:</strong> {new Date(appointment.date).toLocaleDateString([], {
+                          year: "numeric",
+                          month: "short",
+                          day: "2-digit",
+                          weekday: "short",
+                        })}
                       </span>
                     </div>
                     <div className="flex items-center">
                       <span className="mr-2 text-green-500">⏰</span>
                       <span>
-                        <strong>Time:</strong> {appointment.time}
+                        <strong>Time:</strong> {new Date(appointment.date).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
                       </span>
                     </div>
                     <div className="flex items-start">
-                      <span className="mr-2 text-red-400">📝</span>
+                      <span className="mr-2 text-red-400">🏥</span>
                       <span>
-                        <strong>Reason:</strong> {appointment.reason}
+                        <strong>Hospital:</strong> {appointment.doctorId.hospital}
                       </span>
                     </div>
                   </div>
