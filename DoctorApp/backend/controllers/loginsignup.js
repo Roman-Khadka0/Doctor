@@ -72,7 +72,7 @@ const forgotPassword = async (req, res) => {
     }
 
     // Generate a reset token
-    const resetToken = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "15m" });
+    const resetToken = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "5m" });
 
     // Send the reset token via email
     const transporter = nodemailer.createTransport({
