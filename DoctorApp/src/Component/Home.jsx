@@ -12,7 +12,9 @@ function Landing() {
   const [favorites, setFavorites] = useState([]);
   const [doctors, setDoctors] = useState([]); // State to store doctors fetched from the backend
 
-  const displayedDoctors = showAllDoctors ? doctors : doctors.slice(0, 3); // Show only the first 3 doctors when 'showAllDoctors' is false
+  const displayedDoctors = doctors
+  .sort((a, b) => b.rating - a.rating) // Sort doctors by rating in descending order
+  .slice(0, 3); // Take the top 3 doctors
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -112,7 +114,6 @@ function Landing() {
         const data = await response.json();
         if (data.status === "ok") {
           setFavorites(data.data); // Set favorites from the backend
-          console.log("Fetched favorites:", data.data); // Log the fetched favorites
         } else {
           console.error("Failed to fetch favorites:", data.error);
         }
@@ -247,10 +248,10 @@ function Landing() {
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold text-[#258C9B]">Top Doctors</h2>
             <button
-              onClick={() => setShowAllDoctors(!showAllDoctors)}
+              onClick={() => window.location.href = "/docdash"}
               className="text-[#258C9B] font-semibold hover:underline"
             >
-              {showAllDoctors ? "Show Less" : "See All"}
+              See All
             </button>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
