@@ -39,7 +39,7 @@ const login = async (req, res) => {
   }
   if (await bcrypt.compare(password, user.password)) {
     // Included user data in the token payload
-    const token = jwt.sign({ email: user.email, id: user._id, role: user.role, profilePicture: user.profilePicture }, JWT_SECRET, { expiresIn: "5h" });
+    const token = jwt.sign({ name: user.name, email: user.email, id: user._id, role: user.role, profilePicture: user.profilePicture }, JWT_SECRET, { expiresIn: "5h" });
 
     return res.json({ status: "ok", data: token });
   }
@@ -72,7 +72,7 @@ const forgotPassword = async (req, res) => {
     }
 
     // Generate a reset token
-    const resetToken = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "15m" });
+    const resetToken = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: "5m" });
 
     // Send the reset token via email
     const transporter = nodemailer.createTransport({

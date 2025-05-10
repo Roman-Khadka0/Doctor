@@ -139,10 +139,10 @@ export default function PatientProfile() {
               <img src={Logo} alt="logo" className="h-12 w-12" />
             </div>
             <nav className="hidden lg:flex space-x-10 text-xl">
-              <Link to="/" className="text-white hover:text-gray-300 font-semibold">
+              <Link to="/home" className="text-white hover:text-gray-300 font-semibold">
                 Home
               </Link>
-              <Link to="/dashboard" className="text-white hover:text-gray-300 font-semibold">
+              <Link to="/docdash" className="text-white hover:text-gray-300 font-semibold">
                 Doctors
               </Link>
               <Link to="/appointment" className="text-white hover:text-gray-300 font-semibold">
