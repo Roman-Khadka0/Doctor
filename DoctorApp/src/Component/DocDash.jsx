@@ -1,35 +1,50 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Heart, HeartOff } from 'lucide-react';
 import Navbar from '../Component/Navbar'
 import Logo from '../assets/Logo.png'
 
-const allDoctors = [
-  { id: 1, name: "Dr. Aayush silwal", title: "General physician" },
-  { id: 2, name: "Dr. Roman khadka", title: "General physician" },
-  { id: 3, name: "Dr. pranisha maharjan", title: "General physician" },
-  { id: 4, name: "Dr. manawi", title: "General physician" },
-  { id: 5, name: "Dr. aayush khatiwada", title: "General physician" },
-  { id: 6, name: "Dr. swopnil sharma", title: "General physician" },
-  { id: 7, name: "Dr. Ivana Cure", title: "General physician" },
-  { id: 8, name: "Dr. Max Healey", title: "General physician" },
-];
+// const allDoctors = [
+//   { id: 1, name: "Dr. Aayush silwal", title: "General physician" },
+//   { id: 2, name: "Dr. Roman khadka", title: "General physician" },
+//   { id: 3, name: "Dr. pranisha maharjan", title: "General physician" },
+//   { id: 4, name: "Dr. manawi", title: "General physician" },
+//   { id: 5, name: "Dr. aayush khatiwada", title: "General physician" },
+//   { id: 6, name: "Dr. swopnil sharma", title: "General physician" },
+//   { id: 7, name: "Dr. Ivana Cure", title: "General physician" },
+//   { id: 8, name: "Dr. Max Healey", title: "General physician" },
+// ];
 
 export default function DocDash() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [favorites, setFavorites] = useState([]);
   const [showAll, setShowAll] = useState(false);
+  const [allDoctors, setAllDoctors] = useState([]);
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/doctors'); // Replace with your backend URL
+        const data = await response.json();
+        if (data.status === 'ok') {
+          setAllDoctors(data.data); // Update the state with fetched doctors
+        } else {
+          console.error('Failed to fetch doctors:', data.error);
+        }
+      } catch (error) {
+        console.error('Error fetching doctors:', error);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
 
   const filteredDoctors = allDoctors.filter(doc =>
-    doc.name.toLowerCase().includes(searchTerm.toLowerCase())
+    doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    doc.specialty?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const visibleDoctors = showAll ? filteredDoctors : filteredDoctors.slice(0, 4);
 
-  const toggleFavorite = (id) => {
-    setFavorites(prev =>
-      prev.includes(id) ? prev.filter(favId => favId !== id) : [...prev, id]
-    );
-  };
+  
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -65,22 +80,22 @@ export default function DocDash() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
           {visibleDoctors.map((doc) => (
             <div
-              key={doc.id}
+              key={doc._id}
               className="relative bg-white rounded-xl p-4 shadow hover:shadow-lg transition-all aspect-square flex flex-col justify-between"
             >
               <button
                 className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
-                onClick={() => toggleFavorite(doc.id)}
+                onClick={() => toggleFavorite(doc._id)}
                 aria-label="Toggle Favorite"
               >
-                {favorites.includes(doc.id)
+                {/* {favorites.includes(doc.id)
                   ? <Heart fill="red" color="red" size={20} />
-                  : <HeartOff size={20} />}
+                  : <HeartOff size={20} />} */}
               </button>
 
               <div className="w-full aspect-square bg-blue-100 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
                 <img
-                  src={`/doctor${doc.id}.jpg`}
+                  src={doc.photo}
                   alt={doc.name}
                   className="h-full object-cover"
                   onError={(e) => {
