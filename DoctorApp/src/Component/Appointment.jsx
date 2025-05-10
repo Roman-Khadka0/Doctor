@@ -96,7 +96,7 @@ const AppointmentPage = () => {
       });
       const data = await response.json();
       if (data.status === "ok") {
-        setAppointments(data.data); // Update appointments state with fetched data
+        setAppointments(data.scheduled); // Update appointments state with fetched data
       } else {
         console.error("Error fetching appointments:", data.error);
       }

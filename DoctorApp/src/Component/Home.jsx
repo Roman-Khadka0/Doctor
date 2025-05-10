@@ -81,7 +81,11 @@ function Landing() {
 
         const data = await response.json();
         if (data.status === "ok") {
-          setAppointments(data.data); // Set only upcoming appointments
+          // Sort appointments by date and select the next one
+      const sortedAppointments = data.scheduled.sort(
+        (a, b) => new Date(a.date) - new Date(b.date)
+      );
+      setAppointments(sortedAppointments[0] ? [sortedAppointments[0]] : []); // Set only the next appointment
         } else {
           console.error("Failed to fetch appointments:", data.error);
         }
@@ -198,9 +202,9 @@ function Landing() {
 
         {/* Upcoming Appointments */}
         <div className="mb-12">
-          <h2 className="text-2xl font-bold text-[#258C9B] mb-4">Upcoming Appointments</h2>
+          <h2 className="text-2xl font-bold text-[#258C9B] mb-4">Next Appointment</h2>
           {appointments.length === 0 ? (
-            <p className="text-gray-600">No upcoming appointments found.</p>
+            <p className="text-gray-600">No appointment scheduled.</p>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {appointments.map((appointment) => (
