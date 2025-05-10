@@ -7,6 +7,7 @@ const AppointmentPage = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [appointments, setAppointments] = useState([]);
+  const [doctors, setDoctors] = useState([]); // State to store fetched doctors
 
   const [formData, setFormData] = useState({
     doctor: "",
@@ -17,11 +18,19 @@ const AppointmentPage = () => {
     reason: "",
   });
 
-  const doctors = [
-    { id: 1, name: "Dr. Smith", specialty: "Cardiologist" },
-    { id: 2, name: "Dr. Jane", specialty: "Dermatologist" },
-    { id: 3, name: "Dr. Kumar", specialty: "Neurologist" },
-  ];
+  const fetchDoctors = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/doctors");
+      const data = await response.json();
+      if (data.status === "ok") {
+        setDoctors(data.data); // Update doctors state with fetched data
+      } else {
+        console.error("Error fetching doctors:", data.error);
+      }
+    } catch (error) {
+      console.error("Error fetching doctors:", error);
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -48,7 +57,11 @@ const AppointmentPage = () => {
           "Content-Type": "application/json",
           Authorization: token,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          doctorId: formData.doctor, // Send doctorId instead of name
+          date: `${formData.date}T${formData.time}`, // Combine date and time
+          reason: formData.reason, // Reason for the appointment
+        }),
       });
 
       const data = await response.json();
@@ -59,12 +72,10 @@ const AppointmentPage = () => {
           doctor: "",
           date: "",
           time: "",
-          name: "",
-          email: "",
           reason: "",
         });
         fetchAppointments(); // Refresh appointment list
-        setShowForm(false);  // Hide form after booking
+        setShowForm(false); // Hide form after booking
       } else {
         alert(data.error);
       }
@@ -78,53 +89,61 @@ const AppointmentPage = () => {
     if (!token) return;
 
     try {
-      const response = await fetch("http://localhost:5000/api/appointments", {
+      const response = await fetch("http://localhost:5000/api/appointments/user", {
         headers: {
           Authorization: token,
         },
       });
       const data = await response.json();
       if (data.status === "ok") {
-        setAppointments(data.appointments); // Make sure your backend returns `appointments`
+        setAppointments(data.data); // Update appointments state with fetched data
+      } else {
+        console.error("Error fetching appointments:", data.error);
       }
     } catch (error) {
       console.error("Error fetching appointments:", error);
     }
   };
 
+  const handleCancel = async (appointmentId) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please log in to cancel an appointment.");
+      window.location.href = "/login";
+      return;
+    }
+
+    const confirmCancel = window.confirm("Are you sure you want to cancel this appointment?");
+    if (!confirmCancel) {
+      return; 
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/appointments/cancel/${appointmentId}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: token,
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.status === "ok") {
+        alert("Appointment cancelled successfully!");
+        fetchAppointments(); // Refresh the list of appointments
+      } else {
+        alert(data.error);
+      }
+    } catch (error) {
+      console.error("Error cancelling appointment:", error);
+      alert("Failed to cancel appointment. Please try again.");
+    }
+  };
+
   useEffect(() => {
     fetchAppointments();
+    fetchDoctors(); 
   }, []);
-
-  const [bookedAppointments, setBookedAppointments] = useState([
-    {
-      id: 1,
-      name: "Dr. Asha Sharma",
-      specialty: "General physician",
-      address: "Naxal",
-      date: "2025-04-25",
-      time: "08:30",
-      image: "https://randomuser.me/api/portraits/women/44.jpg"
-    },
-    {
-      id: 2,
-      name: "Dr. Hari Sapkota",
-      specialty: "General physician",
-      address: "Naxal",
-      date: "2025-04-25",
-      time: "08:30",
-      image: "https://randomuser.me/api/portraits/men/52.jpg"
-    },
-    {
-      id: 3,
-      name: "Dr. Jima Lahmu Sherpa",
-      specialty: "General physician",
-      address: "Naxal",
-      date: "2025-04-25",
-      time: "08:30",
-      image: "https://randomuser.me/api/portraits/women/61.jpg"
-    },
-  ]);
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -162,7 +181,7 @@ const AppointmentPage = () => {
               >
                 <option value="">Choose a doctor</option>
                 {doctors.map((doc) => (
-                  <option key={doc.id} value={doc.name}>
+                  <option key={doc._id} value={doc._id}>
                     {doc.name} - {doc.specialty}
                   </option>
                 ))}
@@ -195,32 +214,6 @@ const AppointmentPage = () => {
             </div>
 
             <div>
-              <label className="block mb-1 font-medium text-gray-700">Your Name</label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-                placeholder="Roman Khadka"
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#258C9B]"
-              />
-            </div>
-
-            <div>
-              <label className="block mb-1 font-medium text-gray-700">Email Address</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                placeholder="Romann@example.com"
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#258C9B]"
-              />
-            </div>
-
-            <div>
               <label className="block mb-1 font-medium text-gray-700">Reason for Visit</label>
               <textarea
                 name="reason"
@@ -245,41 +238,41 @@ const AppointmentPage = () => {
       <br />
 
       {/* Booked Appointments Section */}
-      {bookedAppointments.length === 0 ? (
-            <p className="text-center text-gray-500">No booked appointments.</p>
-          ) : (
-            bookedAppointments.map((appointment) => (
-              <div
-                key={appointment.id}
-                className="bg-white shadow-xl rounded-xl p-10 mb-10 flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0 md:space-x-8"
-              >
-                <div className="flex items-center space-x-8 w-full">
-                  <img
-                    src={appointment.image}
-                    alt={appointment.name}
-                    className="w-32 h-32 object-cover rounded-md shadow"
-                  />
-                  <div className="space-y-3">
-                    <h3 className="text-2xl font-bold text-[#333]">{appointment.name}</h3>
-                    <p className="text-lg text-gray-700">{appointment.specialty}</p>
-                    <p className="text-lg text-gray-700"><strong>Address:</strong> {appointment.address}</p>
-                    <p className="text-lg text-gray-700"><strong>Date & Time:</strong> {appointment.date} | {appointment.time}</p>
-                  </div>
-                </div>
-                <div className="text-center md:text-right space-y-4 w-full md:w-auto">
-                  <div className="text-sm bg-green-100 text-green-700 px-4 py-2 rounded-full inline-block font-medium">
-                    Booked
-                  </div>
-                  <button
-                    onClick={() => handleCancel(appointment.id)}
-                    className="text-md text-red-600 border border-red-500 px-6 py-2 rounded-md hover:bg-red-500 hover:text-white transition font-semibold"
-                  >
-                    Cancel Appointment
-                  </button>
-                </div>
+      {appointments.length === 0 ? (
+        <p className="text-center text-gray-500">No booked appointments.</p>
+      ) : (
+        appointments.map((appointment) => (
+          <div
+            key={appointment._id}
+            className="bg-white shadow-xl rounded-xl p-10 mb-10 flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0 md:space-x-8"
+          >
+            <div className="flex items-center space-x-8 w-full">
+              <img
+                src={appointment.doctorId.photo}
+                alt={appointment.doctorId.name}
+                className="w-32 h-32 object-cover rounded-md shadow"
+              />
+              <div className="space-y-3">
+                <h3 className="text-2xl font-bold text-[#333]">{appointment.doctorId.name}</h3>
+                <p className="text-lg text-gray-700">{appointment.doctorId.specialty}</p>
+                <p className="text-lg text-gray-700"><strong>Hospital:</strong> {appointment.doctorId.hospital}</p>
+                <p className="text-lg text-gray-700"><strong>Date & Time:</strong> {new Date(appointment.date).toLocaleString()}</p>
               </div>
-            ))
-          )}
+            </div>
+            <div className="text-center md:text-right space-y-4 w-full md:w-auto">
+              <div className="text-sm bg-green-100 text-green-700 px-4 py-2 rounded-full inline-block font-medium">
+                {appointment.status}
+              </div>
+              <button
+                onClick={() => handleCancel(appointment._id)}
+                className="text-md text-red-600 border border-red-500 px-6 py-2 rounded-md hover:bg-red-500 hover:text-white transition font-semibold"
+              >
+                Cancel Appointment
+              </button>
+            </div>
+          </div>
+        ))
+      )}
     </div>
     </div>
   );
