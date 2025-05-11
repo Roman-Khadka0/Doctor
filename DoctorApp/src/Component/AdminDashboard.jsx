@@ -211,7 +211,18 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#e0f7f9] to-white p-6">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-[#258C9B] mb-8">Admin Dashboard</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl font-bold text-[#258C9B]">Admin Dashboard</h1>
+          <button
+            onClick={() => {
+              localStorage.removeItem("token"); // Remove token from local storage
+              window.location.href = "/login"; // Redirect to login page
+            }}
+            className="bg-[#258C9B] text-white px-4 py-2 rounded hover:bg-[#1e7683]"
+          >
+            Log Out
+          </button>
+        </div>
 
         <div className="grid gap-6 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
           {/* Users */}
