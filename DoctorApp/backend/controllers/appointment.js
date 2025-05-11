@@ -25,17 +25,17 @@ const bookAppointment = async (req, res) => {
   const { doctorId, date, reason } = req.body;
 
   try {
-    // Check if the date is in the past or within 15 minutes from now
+    // Check if the time is within 15 minutes from now
     const appointmentDate = new Date(date);
     const currentDate = new Date();
 
     // Calculate the time difference
     const timeDifference = appointmentDate - currentDate; // note: diffference is in milliseconds
 
-    if (appointmentDate <= currentDate || timeDifference < 15 * 60 * 1000) {
+    if (timeDifference < 15 * 60 * 1000) {
       return res.status(400).json({
         status: "error",
-        error: "You cannot book an appointment in the past or within 15 minutes from now. Please select a valid date and time.",
+        error: "The appointment time must be at least 15 minutes from now.",
       });
     }
 

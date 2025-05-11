@@ -194,6 +194,8 @@ const AppointmentPage = () => {
                 <input
                   type="date"
                   name="date"
+                  min={new Date().toISOString().split("T")[0]} // Disable past dates
+                  max={new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split("T")[0]} // Disable dates more than 1 year in the future
                   value={formData.date}
                   onChange={handleChange}
                   required
