@@ -15,7 +15,10 @@ const SignUp = () => {
     e.preventDefault(); // Prevents default page refresh behavior on form submit
 
     // Validate password strength
-      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password)) {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^])[A-Za-z\d@$!%*?&#^]{8,}$/;
+    const passwordtest = passwordRegex.test(password);
+    console.log(passwordtest, "passwordtest");
+      if (!passwordtest) {
         alert("Please use more strong password.");
         return;
       }
