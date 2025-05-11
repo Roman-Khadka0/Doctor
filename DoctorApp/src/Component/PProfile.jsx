@@ -12,7 +12,6 @@ export default function PatientProfile() {
     gender: "",
     dob: "",
     address: "",
-    profilePicture: "",
     bloodGroup: "",
   });
   const [previewImage, setPreviewImage] = useState(""); // State to store the preview of the uploaded image
@@ -38,17 +37,16 @@ export default function PatientProfile() {
 
         const data = await response.json();
         if (data.status === "ok") {
+          const dob = new Date(data.data.dob).toISOString().split("T")[0]; // Format as YYYY-MM-DD
           setProfile({
             name: data.data.name,
             email: data.data.email,
             phone: data.data.phone,
             gender: data.data.gender,
-            dob: data.data.dob,
+            dob: dob,
             address: data.data.address,
-            // profilePicture: data.data.profilePicture,
             bloodGroup: data.data.bloodGroup,
           });
-          console.log(data.data.profilePicture);
           setPreviewImage(data.data.profilePicture); // Set the initial profile picture
         } else {
           console.error("Failed to fetch user details:", data.error);
@@ -241,6 +239,9 @@ export default function PatientProfile() {
               <input
                 type="date"
                 name="dob"
+                format="YYYY-MM-DD"
+                max={new Date().toISOString().split("T")[0]} // Prevent future dates
+                min="1900-01-01" // Prevent dates before 1900
                 value={profile.dob}
                 onChange={handleChange}
                 disabled={!isEditing}
