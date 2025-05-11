@@ -14,6 +14,12 @@ const SignUp = () => {
   const handleSubmit = (e) => {
     e.preventDefault(); // Prevents default page refresh behavior on form submit
 
+    // Validate password strength
+      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password)) {
+        alert("Please use more strong password.");
+        return;
+      }
+
     // Check if password and confirm password fields match
     if (password !== confirmPassword) {
       alert("Passwords do not match!");

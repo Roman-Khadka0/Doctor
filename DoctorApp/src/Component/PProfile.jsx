@@ -11,6 +11,7 @@ const Profile = () => {
     phone: "",
     gender: "",
     dob: "",
+    address: "",
     bloodGroup: "",
     address: "",
     profilePicture: null, // Changed to null for file handling
@@ -36,24 +37,18 @@ const Profile = () => {
 
         const data = await response.json();
         if (data.status === "ok") {
+          const dob = new Date(data.data.dob).toISOString().split("T")[0]; // Format as YYYY-MM-DD
           setProfile({
             name: data.data.name,
             email: data.data.email,
             phone: data.data.phone,
             gender: data.data.gender,
-            dob: data.data.dob,
+            dob: dob,
             address: data.data.address,
             bloodGroup: data.data.bloodGroup,
             profilePicture: data.data.profilePicture || null,
           });
-          // Set preview image if it exists
-          if (data.data.profilePicture) {
-            setPreviewImage(
-              data.data.profilePicture.startsWith("http")
-                ? data.data.profilePicture
-                : `http://localhost:5000/uploads/${data.data.profilePicture}`
-            );
-          }
+          setPreviewImage(data.data.profilePicture); // Set the initial profile picture
         } else {
           console.error("Failed to fetch user details:", data.error);
         }
@@ -152,48 +147,66 @@ const Profile = () => {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen">
-      <Navbar logo={Logo} />
-
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col items-center space-y-4 w-full max-w-xl mx-auto py-10"
-        encType="multipart/form-data" // Important for file uploads
-      >
-        {/* Profile Picture Upload */}
-        <div className="relative group">
-          <label
-            htmlFor="profilePicture"
-            className={`block w-32 h-32 rounded-full overflow-hidden border-4 ${
-              isEditing
-                ? "border-[#258C9B] cursor-pointer hover:border-[#1e6c78]"
-                : "border-gray-300 cursor-default"
-            } transition-colors`}
-          >
-            <img
-              src={
-                previewImage ||
-                "https://res.cloudinary.com/dzrbxikc8/image/upload/v1745256288/default-profile-account-unknown-icon-black-silhouette-free-vector_jbrjhz.jpg"
-              }
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
-            {isEditing && (
-              <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <span className="text-white text-sm font-medium">Change Photo</span>
-              </div>
-            )}
-          </label>
-          {isEditing && (
-            <input
-              id="profilePicture"
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="absolute inset-0 opacity-0 cursor-pointer"
-            />
-          )}
+    <div
+      className="min-h-screen flex items-center justify-center px-4 py-10"
+      style={{
+        backgroundImage: `url(${Background})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
+      <header className="py-4 w-full absolute top-0 left-0 bg-[#258C9B]">
+        <div className="container mx-auto px-4 flex-center items-center justify-between">
+          <div className="flex items-center">
+            <div className="mr-10">
+              <img src={Logo} alt="logo" className="h-12 w-12" />
+            </div>
+            <nav className="hidden lg:flex space-x-10 text-xl">
+              <Link to="/home" className="text-white hover:text-gray-300 font-semibold">
+                Home
+              </Link>
+              <Link to="/docdash" className="text-white hover:text-gray-300 font-semibold">
+                Doctors
+              </Link>
+              <Link to="/appointment" className="text-white hover:text-gray-300 font-semibold">
+                Appointments
+              </Link>
+            </nav>
+          </div>
         </div>
+      </header>
+
+      <div className="bg-white bg-opacity-90 rounded-2xl shadow-lg w-full max-w-3xl p-6 md:p-10">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl md:text-3xl font-bold text-[#258C9B]">Patient Profile</h1>
+          <button
+            onClick={() => setIsEditing(!isEditing)}
+            className="bg-[#258C9B] text-white px-4 py-2 rounded-lg hover:bg-[#1e6c78] transition"
+          >
+            {isEditing ? "Cancel" : "Edit"}
+          </button>
+        </div>
+
+        <div className="flex flex-col md:flex-row items-center md:items-start gap-6 mb-6">
+          <img
+            src={previewImage || "https://res.cloudinary.com/dzrbxikc8/image/upload/v1745256288/default-profile-account-unknown-icon-black-silhouette-free-vector_jbrjhz.jpg"} // Display the preview or a default image
+            alt="Profile"
+            className="w-32 h-32 rounded-full object-cover shadow-md"
+          />
+          <div className="flex-1 w-full"></div>
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Profile Picture</label>
+              <input
+                type="file"
+                name="profilePicture"
+                accept="image/*"
+                onChange={handleFileChange}
+                disabled={!isEditing}
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#258C9B] disabled:bg-gray-100"
+              />
+            </div>
 
         {/* Edit/Cancel Button */}
         <button
@@ -262,20 +275,20 @@ const Profile = () => {
             </select>
           </div>
 
-          {/* Date of Birth */}
-          <div className="col-span-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Date of Birth
-            </label>
-            <input
-              type="date"
-              name="dob"
-              value={profile.dob}
-              onChange={handleChange}
-              disabled={!isEditing}
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#258C9B] focus:border-[#258C9B] disabled:bg-gray-100"
-            />
-          </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Date of Birth</label>
+              <input
+                type="date"
+                name="dob"
+                format="YYYY-MM-DD"
+                max={new Date().toISOString().split("T")[0]} // Prevent future dates
+                min="1900-01-01" // Prevent dates before 1900
+                value={profile.dob}
+                onChange={handleChange}
+                disabled={!isEditing}
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#258C9B] disabled:bg-gray-100"
+              />
+            </div>
 
           {/* Blood Group */}
           <div className="col-span-1">

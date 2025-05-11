@@ -6,7 +6,6 @@ const getUserDetails = async (req, res) => {
     try {
         // Fetch name and email from the User model
         const user = await User.findById(req.user.id);
-        console.log(user); // Log the user object for debugging
         if (!user) {
           return res.status(404).json({ error: "User not found" });
         }

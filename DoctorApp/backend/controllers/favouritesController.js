@@ -26,7 +26,7 @@ const addFavorite = async (req, res) => {
     }
 
     // Check if the doctor is already in favorites
-    if (user.favorites.some((fav) => fav.name === doctor.name)) {
+    if (user.favorites.some((fav) => fav._id === doctor._id)) {
       return res.status(400).json({ error: "Doctor is already in favorites" });
     }
 
@@ -47,7 +47,7 @@ const removeFavorite = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    user.favorites = user.favorites.filter((fav) => fav.name !== doctor.name);
+    user.favorites = user.favorites.filter((fav) => fav._id !== doctor._id);
     await user.save();
     res.json({ status: "ok", message: "Doctor removed from favorites", data: user.favorites });
   } catch (error) {
