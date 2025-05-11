@@ -18,7 +18,9 @@ const deleteUser = async (req, res) => {
 
 const getAppointments = async (req, res) => {
     try {
-      const appointments = await Appointment.find(); // Fetch all appointments from the database
+      const appointments = await Appointment.find()
+      .populate("userId", "name")
+      .exec();
       res.json({ status: "ok", data: appointments });
     } catch (error) {
       console.error("Error fetching appointments:", error);
