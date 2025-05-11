@@ -3,23 +3,12 @@ import { Heart, HeartOff, Star } from 'lucide-react';
 import Navbar from '../Component/Navbar';
 import Logo from '../assets/Logo.png';
 
-// const allDoctors = [
-//   { id: 1, name: "Dr. Aayush silwal", title: "General physician" },
-//   { id: 2, name: "Dr. Roman khadka", title: "General physician" },
-//   { id: 3, name: "Dr. pranisha maharjan", title: "General physician" },
-//   { id: 4, name: "Dr. manawi", title: "General physician" },
-//   { id: 5, name: "Dr. aayush khatiwada", title: "General physician" },
-//   { id: 6, name: "Dr. swopnil sharma", title: "General physician" },
-//   { id: 7, name: "Dr. Ivana Cure", title: "Psychiatrist", details: true },
-//   { id: 8, name: "Dr. Max Healey", title: "General physician" },
-// ];
-
 export default function DocDash() {
-  const [searchTerm, setSearchTerm] = useState('');
   const [favorites, setFavorites] = useState([]);
-  const [showAll, setShowAll] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [allDoctors, setAllDoctors] = useState([]);
+  const [sortBy, setSortBy] = useState(''); // State to store sorting criteria
+  const [searchTerm, setSearchTerm] = useState(''); // State to store search input
 
   useEffect(() => {
     const fetchDoctors = async () => {
@@ -67,12 +56,24 @@ export default function DocDash() {
     fetchFavorites();
   }, []);
 
-  const filteredDoctors = allDoctors.filter(doc =>
-    doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    doc.specialty?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const visibleDoctors = showAll ? filteredDoctors : filteredDoctors.slice(0, 4);
+  // Combine search and sorting logic
+  const sortedDoctors = [...allDoctors]
+    .filter((doc) => {
+      // Filter by search term
+      return doc.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      doc.specialty.toLowerCase().includes(searchTerm.toLowerCase());
+    })
+    .sort((a, b) => {
+      // Sort by selected criteria
+      if (sortBy === 'rating') {
+        return b.rating - a.rating; // Sort by rating in descending order
+      } else if (sortBy === 'name') {
+        return a.name.localeCompare(b.name); // Sort alphabetically by name
+      } else if (sortBy === 'specialty') {
+        return a.specialty.localeCompare(b.specialty); // Sort alphabetically by specialty
+      }
+      return 0; // No sorting
+    });
 
   const toggleFavorite = async (doctor) => {
     const token = localStorage.getItem("token");
@@ -82,7 +83,6 @@ export default function DocDash() {
     }
 
     try {
-
       if (favorites && favorites.some((fav) => fav._id === doctor._id)) {
         // Remove from favorites
         const response = await fetch("http://localhost:5000/api/favorites/remove", {
@@ -121,7 +121,7 @@ export default function DocDash() {
     } catch (error) {
       console.error("Error updating favorites:", error);
     }
-  }
+  };
 
   const handleCardClick = (doctor) => {
     setSelectedDoctor(doctor);
@@ -147,18 +147,22 @@ export default function DocDash() {
           />
         </div>
 
-        <div className="mt-8 flex justify-between items-center">
-          <h3 className="text-lg font-medium text-teal-600">Recommended Doctors</h3>
-          <button
-            onClick={() => setShowAll(!showAll)}
-            className="text-teal-500 text-sm hover:underline"
+        <div className="mt-4 flex flex-col md:flex-row md:items-center">
+          <h3 className="text-lg font-medium text-teal-600">Sort By:</h3>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="px-4 py-2 focus:outline-none"
           >
-            {showAll ? 'Show Less' : 'See All'}
-          </button>
+            <option value="">None</option>
+            <option value="rating">Rating</option>
+            <option value="name">Name</option>
+            <option value="specialty">Specialty</option>
+          </select>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-          {visibleDoctors.map((doc) => (
+          {sortedDoctors.map((doc) => (
             <div
               key={doc._id}
               className="relative bg-white rounded-xl p-4 shadow hover:shadow-lg transition-all aspect-square flex flex-col justify-between cursor-pointer"
@@ -197,72 +201,69 @@ export default function DocDash() {
           ))}
         </div>
 
-        {filteredDoctors.length === 0 && (
+        {sortedDoctors.length === 0 && (
           <p className="text-center text-gray-500 mt-8">No doctors found.</p>
         )}
       </div>
-{/* Doctor Detail Popup with light transparent background */}
-{selectedDoctor && (
-  <div
-    className="fixed inset-0 flex justify-center items-center z-50"
-    style={{ backgroundColor: 'rgba(255, 255, 255, 0.84)' }}
-  >
-    <div className="bg-white p-6 rounded-xl max-w-2xl w-full mx-4 relative shadow-lg">
-      <button
-        className="absolute top-2 right-2 text-black hover:text-black"
-  style={{ color: 'black' }}
-        onClick={closePopup}
-      >
-        ✖
-      </button>
 
-      <div className="flex gap-6">
-        <div className="w-full aspect-square">
-          <img
-            src={selectedDoctor.photo}
-            alt={selectedDoctor.name}
-            className="rounded-lg object-cover w-full h-full"
-            onError={(e) => {
-              e.currentTarget.onerror = null;
-              e.currentTarget.src = 'https://via.placeholder.com/100?text=👨‍⚕️';
-            }}
-          />
-        </div>
+      {selectedDoctor && (
+        <div
+          className="fixed inset-0 flex justify-center items-center z-50"
+          style={{ backgroundColor: 'rgba(255, 255, 255, 0.84)' }}
+        >
+          <div className="bg-white p-6 rounded-xl max-w-2xl w-full mx-4 relative shadow-lg">
+            <button
+              className="absolute top-2 right-2 text-black hover:text-black"
+              style={{ color: 'black' }}
+              onClick={closePopup}
+            >
+              ✖
+            </button>
 
-        <div className="w-full aspect-square flex flex-col justify-between">
-          <div>
-            <h2 className="text-2xl font-bold flex items-center gap-2">
-              {selectedDoctor.name}
-            </h2>
-            <p className="text-base text-gray-600 mt-2">
-              {selectedDoctor.specialty}
-            </p>
+            <div className="flex gap-6">
+              <div className="w-full aspect-square">
+                <img
+                  src={selectedDoctor.photo}
+                  alt={selectedDoctor.name}
+                  className="rounded-lg object-cover w-full h-full"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = 'https://via.placeholder.com/100?text=👨‍⚕️';
+                  }}
+                />
+              </div>
 
-            <div className="mt-4 text-gray-800 text-base space-y-2">
-              <p className="font-medium">📞 {selectedDoctor.phone}</p>
-              <p>
-                {selectedDoctor.about}
-              </p>
+              <div className="w-full aspect-square flex flex-col justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold flex items-center gap-2">
+                    {selectedDoctor.name}
+                  </h2>
+                  <p className="text-base text-gray-600 mt-2">
+                    {selectedDoctor.specialty}
+                  </p>
+
+                  <div className="mt-4 text-gray-800 text-base space-y-2">
+                    <p className="font-medium">📞 {selectedDoctor.phone}</p>
+                    <p>
+                      {selectedDoctor.about}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-1 flex justify-between items-center text-base text-gray-800">
+                  <p>
+                    Hospital: <span className="font-semibold text-black">{selectedDoctor.hospital}</span>
+                  </p>
+
+                  <div className="flex items-center text-yellow-500 font-semibold">
+                    {selectedDoctor.rating} <Star size={18} fill="currentColor" className="ml-1" />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-
-          <div className="mt-1 flex justify-between items-center text-base text-gray-800">
-            <p>
-              Hospital: <span className="font-semibold text-black">{selectedDoctor.hospital}</span>
-            </p>
-
-            <div className="flex items-center text-yellow-500 font-semibold">
-              {selectedDoctor.rating} <Star size={18} fill="currentColor" className="ml-1" />
-            </div>
-          </div>
         </div>
-      </div>
-    </div>
-  </div>
-)}
-
-
-            
+      )}
     </div>
   );
 }
