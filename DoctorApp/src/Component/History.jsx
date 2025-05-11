@@ -74,6 +74,8 @@ export default function DoctorAppointmentHistory() {
                       className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${
                         appointment.status === "Completed"
                           ? "bg-green-100 text-green-700"
+                          : appointment.status === "Scheduled"
+                          ? "bg-blue-100 text-blue-700"
                           : "bg-red-100 text-red-600"
                       }`}
                     >
