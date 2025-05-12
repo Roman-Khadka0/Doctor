@@ -7,6 +7,7 @@ const AdminDashboard = () => {
   const [search, setSearch] = useState("");
   const [doctorSearch, setDoctorSearch] = useState("");
   const [showDoctorModal, setShowDoctorModal] = useState(false);
+
   const [newDoctor, setNewDoctor] = useState({
     name: "",
     image: "",
@@ -206,6 +207,10 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error("Error fetching appointments:", error);
     }
+  };
+  const handleLogoutConfirm = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
   };
 
   return (
