@@ -1,35 +1,126 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Heart, HeartOff, Star } from 'lucide-react';
 import Navbar from '../Component/Navbar';
 import Logo from '../assets/Logo.png';
 
-const allDoctors = [
-  { id: 1, name: "Dr. Aayush silwal", title: "General physician" },
-  { id: 2, name: "Dr. Roman khadka", title: "General physician" },
-  { id: 3, name: "Dr. pranisha maharjan", title: "General physician" },
-  { id: 4, name: "Dr. manawi", title: "General physician" },
-  { id: 5, name: "Dr. aayush khatiwada", title: "General physician" },
-  { id: 6, name: "Dr. swopnil sharma", title: "General physician" },
-  { id: 7, name: "Dr. Ivana Cure", title: "Psychiatrist", details: true },
-  { id: 8, name: "Dr. Max Healey", title: "General physician" },
-];
-
 export default function DocDash() {
-  const [searchTerm, setSearchTerm] = useState('');
   const [favorites, setFavorites] = useState([]);
-  const [showAll, setShowAll] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [allDoctors, setAllDoctors] = useState([]);
+  const [sortBy, setSortBy] = useState(''); // State to store sorting criteria
+  const [searchTerm, setSearchTerm] = useState(''); // State to store search input
 
-  const filteredDoctors = allDoctors.filter(doc =>
-    doc.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/doctors'); // Replace with your backend URL
+        const data = await response.json();
+        if (data.status === 'ok') {
+          setAllDoctors(data.data); // Update the state with fetched doctors
+        } else {
+          console.error('Failed to fetch doctors:', data.error);
+        }
+      } catch (error) {
+        console.error('Error fetching doctors:', error);
+      }
+    };
 
-  const visibleDoctors = showAll ? filteredDoctors : filteredDoctors.slice(0, 4);
+    const fetchFavorites = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
 
-  const toggleFavorite = (id) => {
-    setFavorites(prev =>
-      prev.includes(id) ? prev.filter(favId => favId !== id) : [...prev, id]
-    );
+      try {
+        const response = await fetch("http://localhost:5000/api/favorites", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+        });
+
+        const data = await response.json();
+        if (data.status === "ok") {
+          setFavorites(data.data); // Set favorites from the backend
+        } else {
+          console.error("Failed to fetch favorites:", data.error);
+        }
+      } catch (error) {
+        console.error("Error fetching favorites:", error);
+      }
+    };
+
+    fetchDoctors();
+    fetchFavorites();
+  }, []);
+
+  // Combine search and sorting logic
+  const sortedDoctors = [...allDoctors]
+    .filter((doc) => {
+      // Filter by search term
+      return doc.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      doc.specialty.toLowerCase().includes(searchTerm.toLowerCase());
+    })
+    .sort((a, b) => {
+      // Sort by selected criteria
+      if (sortBy === 'rating') {
+        return b.rating - a.rating; // Sort by rating in descending order
+      } else if (sortBy === 'name') {
+        return a.name.localeCompare(b.name); // Sort alphabetically by name
+      } else if (sortBy === 'specialty') {
+        return a.specialty.localeCompare(b.specialty); // Sort alphabetically by specialty
+      }
+      return 0; // No sorting
+    });
+
+  const toggleFavorite = async (doctor) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No token found");
+      return;
+    }
+
+    try {
+      if (favorites && favorites.some((fav) => fav._id === doctor._id)) {
+        // Remove from favorites
+        const response = await fetch("http://localhost:5000/api/favorites/remove", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+          body: JSON.stringify({ doctor }),
+        });
+
+        const data = await response.json();
+        if (data.status === "ok") {
+          setFavorites(data.data); // Update favorites from the backend
+        } else {
+          console.error("Failed to remove favorite:", data.error);
+        }
+      } else {
+        // Add to favorites
+        const response = await fetch("http://localhost:5000/api/favorites/add", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+          body: JSON.stringify({ doctor }),
+        });
+
+        const data = await response.json();
+        if (data.status === "ok") {
+          setFavorites(data.data); // Update favorites from the backend
+        } else {
+          console.error("Failed to add favorite:", data.error);
+        }
+      }
+    } catch (error) {
+      console.error("Error updating favorites:", error);
+    }
   };
 
   const handleCardClick = (doctor) => {
@@ -56,20 +147,24 @@ export default function DocDash() {
           />
         </div>
 
-        <div className="mt-8 flex justify-between items-center">
-          <h3 className="text-lg font-medium text-teal-600">Recommended Doctors</h3>
-          <button
-            onClick={() => setShowAll(!showAll)}
-            className="text-teal-500 text-sm hover:underline"
+        <div className="mt-4 flex flex-col md:flex-row md:items-center">
+          <h3 className="text-lg font-medium text-teal-600">Sort By:</h3>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="px-4 py-2 focus:outline-none"
           >
-            {showAll ? 'Show Less' : 'See All'}
-          </button>
+            <option value="">None</option>
+            <option value="rating">Rating</option>
+            <option value="name">Name</option>
+            <option value="specialty">Specialty</option>
+          </select>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-          {visibleDoctors.map((doc) => (
+          {sortedDoctors.map((doc) => (
             <div
-              key={doc.id}
+              key={doc._id}
               className="relative bg-white rounded-xl p-4 shadow hover:shadow-lg transition-all aspect-square flex flex-col justify-between cursor-pointer"
               onClick={() => handleCardClick(doc)}
             >
@@ -77,18 +172,18 @@ export default function DocDash() {
                 className="absolute top-2 right-2 text-gray-400 hover:text-red-500 z-10"
                 onClick={(e) => {
                   e.stopPropagation();
-                  toggleFavorite(doc.id);
+                  toggleFavorite(doc);
                 }}
                 aria-label="Toggle Favorite"
               >
-                {favorites.includes(doc.id)
+                {favorites.some((fav) => fav._id === doc._id)
                   ? <Heart fill="red" color="red" size={20} />
                   : <HeartOff size={20} />}
               </button>
 
               <div className="w-full aspect-square bg-blue-100 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
                 <img
-                  src={`/doctor${doc.id}.jpg`}
+                  src={doc.photo}
                   alt={doc.name}
                   className="h-full object-cover"
                   onError={(e) => {
@@ -106,78 +201,69 @@ export default function DocDash() {
           ))}
         </div>
 
-        {filteredDoctors.length === 0 && (
+        {sortedDoctors.length === 0 && (
           <p className="text-center text-gray-500 mt-8">No doctors found.</p>
         )}
       </div>
-{/* Doctor Detail Popup with light transparent background */}
-{selectedDoctor && (
-  <div
-    className="fixed inset-0 flex justify-center items-center z-50"
-    style={{ backgroundColor: 'rgba(255, 255, 255, 0.84)' }}
-  >
-    <div className="bg-white p-6 rounded-xl max-w-2xl w-full mx-4 relative shadow-lg">
-      <button
-        className="absolute top-2 right-2 text-black hover:text-black"
-  style={{ color: 'black' }}
-        onClick={closePopup}
-      >
-        ✖
-      </button>
 
-      <div className="flex gap-6">
-        <div className="w-full aspect-square">
-          <img
-            src={`/doctor${selectedDoctor.id}.jpg`}
-            alt={selectedDoctor.name}
-            className="rounded-lg object-cover w-full h-full"
-            onError={(e) => {
-              e.currentTarget.onerror = null;
-              e.currentTarget.src = 'https://via.placeholder.com/100?text=👨‍⚕️';
-            }}
-          />
-        </div>
+      {selectedDoctor && (
+        <div
+          className="fixed inset-0 flex justify-center items-center z-50"
+          style={{ backgroundColor: 'rgba(255, 255, 255, 0.84)' }}
+        >
+          <div className="bg-white p-6 rounded-xl max-w-2xl w-full mx-4 relative shadow-lg">
+            <button
+              className="absolute top-2 right-2 text-black hover:text-black"
+              style={{ color: 'black' }}
+              onClick={closePopup}
+            >
+              ✖
+            </button>
 
-        <div className="w-full aspect-square flex flex-col justify-between">
-          <div>
-            <h2 className="text-2xl font-bold flex items-center gap-2">
-              {selectedDoctor.name} <span className="text-[#0000ff]">✔</span>
-            </h2>
-            <p className="text-base text-gray-600 mt-2">
-              MBBS - {selectedDoctor.title || 'Doctor'}{' '}
-              <span className="ml-2 px-2 py-0.5 text-sm bg-gray-100 rounded">
-                4 Years
-              </span>
-            </p>
+            <div className="flex gap-6">
+              <div className="w-full aspect-square">
+                <img
+                  src={selectedDoctor.photo}
+                  alt={selectedDoctor.name}
+                  className="rounded-lg object-cover w-full h-full"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = 'https://via.placeholder.com/100?text=👨‍⚕️';
+                  }}
+                />
+              </div>
 
-            <div className="mt-4 text-gray-800 text-base space-y-2">
-              <p className="font-medium">📞 +977984355124</p>
-              <p>
-                {selectedDoctor.title === 'Psychiatrist'
-                  ? "Dr. Ivana Cure is a dedicated psychiatrist with a strong commitment to delivering comprehensive mental health care..."
-                  : "This doctor is known for providing excellent general medical care. Dr. takes a personal interest in each patient's health, making sure they feel heard, respected, and well cared for during every visit"}
-              </p>
-            </div>
-          </div>
+              <div className="w-full aspect-square flex flex-col justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold flex items-center gap-2">
+                    {selectedDoctor.name}
+                  </h2>
+                  <p className="text-base text-gray-600 mt-2">
+                    {selectedDoctor.specialty}
+                  </p>
 
-          <div className="mt-1 flex justify-between items-center text-base text-gray-800">
+                  <div className="mt-4 text-gray-800 text-base space-y-2">
+                    <p className="font-medium">📞 {selectedDoctor.phone}</p>
+                    <p>
+                      {selectedDoctor.about}
+                    </p>
+                  </div>
+                </div>
 
-            <p>
-              Appointment fee:{' '}
-              <span className="font-semibold text-black">$30</span>
-            </p>
-            <div className="flex items-center text-yellow-500 font-semibold">
-              4.5 <Star size={18} fill="currentColor" className="ml-1" />
+                <div className="mt-1 flex justify-between items-center text-base text-gray-800">
+                  <p>
+                    Hospital: <span className="font-semibold text-black">{selectedDoctor.hospital}</span>
+                  </p>
+
+                  <div className="flex items-center text-yellow-500 font-semibold">
+                    {selectedDoctor.rating} <Star size={18} fill="currentColor" className="ml-1" />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-)}
-
-
-            
+      )}
     </div>
   );
 }

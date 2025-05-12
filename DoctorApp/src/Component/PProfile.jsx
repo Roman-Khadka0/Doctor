@@ -12,7 +12,6 @@ export default function PatientProfile() {
     gender: "",
     dob: "",
     address: "",
-    profilePicture: "",
     bloodGroup: "",
   });
   const [previewImage, setPreviewImage] = useState(""); // State to store the preview of the uploaded image
@@ -45,10 +44,8 @@ export default function PatientProfile() {
             gender: data.data.gender,
             dob: data.data.dob,
             address: data.data.address,
-            // profilePicture: data.data.profilePicture,
             bloodGroup: data.data.bloodGroup,
           });
-          console.log(data.data.profilePicture);
           setPreviewImage(data.data.profilePicture); // Set the initial profile picture
         } else {
           console.error("Failed to fetch user details:", data.error);
@@ -139,10 +136,10 @@ export default function PatientProfile() {
               <img src={Logo} alt="logo" className="h-12 w-12" />
             </div>
             <nav className="hidden lg:flex space-x-10 text-xl">
-              <Link to="/" className="text-white hover:text-gray-300 font-semibold">
+              <Link to="/home" className="text-white hover:text-gray-300 font-semibold">
                 Home
               </Link>
-              <Link to="/dashboard" className="text-white hover:text-gray-300 font-semibold">
+              <Link to="/docdash" className="text-white hover:text-gray-300 font-semibold">
                 Doctors
               </Link>
               <Link to="/appointment" className="text-white hover:text-gray-300 font-semibold">
@@ -241,6 +238,9 @@ export default function PatientProfile() {
               <input
                 type="date"
                 name="dob"
+                format="YYYY-MM-DD"
+                max={new Date().toISOString().split("T")[0]} // Prevent future dates
+                min="1900-01-01" // Prevent dates before 1900
                 value={profile.dob}
                 onChange={handleChange}
                 disabled={!isEditing}

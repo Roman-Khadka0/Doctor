@@ -3,6 +3,7 @@ const {
   authenticateUser,
   bookAppointment,
   getUserAppointments,
+  cancelAppointment,
 } = require("../controllers/appointment");
 
 const router = express.Router();
@@ -12,5 +13,8 @@ router.post("/book", authenticateUser, bookAppointment);
 
 // Route to fetch appointments for the logged-in user
 router.get("/user", authenticateUser, getUserAppointments);
+
+// Route to cancel an appointment
+router.patch("/cancel/:appointmentId", authenticateUser, cancelAppointment);
 
 module.exports = router;
