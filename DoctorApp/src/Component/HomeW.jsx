@@ -93,14 +93,14 @@ function Landing() {
     <div className="flex items-center space-x-12">
       {/* Logo */}
       <div className="flex-shrink-0">
-        <img src={logo} alt="EasyDoc Logo" className="h-12 w-12 bg-[#00A9BD] p-2 rounded" />
+        <img src={logo} alt="EasyDoc Logo" className="h-16 w-auto" />
       </div>
 
       {/* Nav Links */}
       <div className="hidden lg:flex space-x-8 text-xl">
-        <Link to="/home" className="hover:text-gray-300">Home</Link>
-        <Link to="/docdash" className="hover:text-gray-300">Doctors</Link>
-        <Link to="/appointment" className="hover:text-gray-300">Appointments</Link>
+        <Link to="/Login" className="hover:text-gray-300">Home</Link>
+        <Link to="/Login" className="hover:text-gray-300">Doctors</Link>
+        <Link to="/Login" className="hover:text-gray-300">Appointments</Link>
       </div>
     </div>
 
@@ -125,7 +125,7 @@ function Landing() {
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8">
               {slides[currentSlide].title}
             </h1>
-            <Link to={slides[currentSlide].link}>
+            <Link to="/Login">
               <button className="bg-white text-[#4AA8B5] hover:text-white px-8 py-4 rounded-lg text-xl flex items-center font-semibold hover:bg-[#4AA8B5] transition duration-300">
                 {slides[currentSlide].buttonText}
                 <ChevronRightIcon className="ml-3 w-6 h-6" />
