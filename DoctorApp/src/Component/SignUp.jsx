@@ -15,7 +15,10 @@ const SignUp = () => {
     e.preventDefault(); // Prevents default page refresh behavior on form submit
 
     // Validate password strength
-      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password)) {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^])[A-Za-z\d@$!%*?&#^]{8,}$/;
+    const passwordtest = passwordRegex.test(password);
+    console.log(passwordtest, "passwordtest");
+      if (!passwordtest) {
         alert("Please use more strong password.");
         return;
       }
@@ -67,11 +70,11 @@ const SignUp = () => {
           <p className="text-center text-gray">Join us and start your journey!!</p>
 
           {/* Link to login page */}
-          <div className="mt-4 flex items-center justify-center text-white px-4 py-2 rounded-md bg-[#4AA8B5] hover:bg-[#4a7d84]">
-            <Link to="/Login">
-              <button>Login</button>
-            </Link>
-          </div>
+          <Link to="/Login">
+            <div className="mt-4 flex items-center justify-center text-white px-4 py-2 rounded-md bg-[#4AA8B5] hover:bg-[#4a7d84]">
+                <button>Login</button>
+            </div>
+          </Link>
 
           {/* Divider line */}
           <div className="flex items-center my-4">

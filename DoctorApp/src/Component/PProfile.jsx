@@ -37,13 +37,12 @@ export default function PatientProfile() {
 
         const data = await response.json();
         if (data.status === "ok") {
-          const dob = new Date(data.data.dob).toISOString().split("T")[0]; // Format as YYYY-MM-DD
           setProfile({
             name: data.data.name,
             email: data.data.email,
             phone: data.data.phone,
             gender: data.data.gender,
-            dob: dob,
+            dob: data.data.dob,
             address: data.data.address,
             bloodGroup: data.data.bloodGroup,
           });
