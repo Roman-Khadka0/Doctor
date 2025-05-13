@@ -65,6 +65,12 @@ const Header = ({ logo, handleLogout }) => {
     navigate("/"); 
   };
 
+  const NavItem = ({ text }) => (
+  <span className="cursor-pointer text-white">
+    {text}
+  </span>
+);
+
   return (
     <header className="py-4 bg-[#4AA8B5] relative">
       <div className="container mx-auto px-4 flex items-center justify-between">
@@ -75,7 +81,7 @@ const Header = ({ logo, handleLogout }) => {
           </div>
 
           {/* Navigation Links */}
-          <nav className="hidden lg:flex space-x-10 text-xl">
+          <nav className="hidden lg:flex space-x-10 text-xl ">
             <Link to="/home"><NavItem text="Home" /></Link>
             <Link to="/docdash"><NavItem text="Doctors" /></Link>
             <Link to="/appointment"><NavItem text="Appointments" /></Link>

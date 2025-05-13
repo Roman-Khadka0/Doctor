@@ -1,10 +1,13 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,7 +56,7 @@ const ForgotPassword = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#258C9B] text-white py-2 px-4 rounded-lg hover:bg-[#1e6f80] transition"
+            className="w-full  bg-[#258C9B] text-white py-2 px-4 rounded-lg hover:bg-[#1e6f80] transition"
           >
             {loading ? "Sending..." : "Send Reset Link"}
           </button>
@@ -65,6 +68,14 @@ const ForgotPassword = () => {
         {error && (
           <p className="text-red-600 text-sm mt-4 text-center">{error}</p>
         )}
+
+        {/* Go Back Button */}
+        <button
+          onClick={() => navigate(-1)}
+          className="mt-2 w-full text-[#258C9B] border border-[#258C9B] py-2 px-4 rounded-lg hover:bg-[#258C9B] hover:text-white transition"
+        >
+          Go Back
+        </button>
       </div>
     </div>
   );

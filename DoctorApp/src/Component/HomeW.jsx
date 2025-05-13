@@ -15,7 +15,7 @@ import Navbar from "../Component/Navbar"
 // replace with real authentication logic
 const dummyUser = {
   isLoggedIn: true, // Change this to false to test non-logged-in view
-  profilePic: "https://randomuser.me/api/portraits/men/75.jpg", // Replace with your user's profile picture URL
+  profilePic: "https://randomuser.me/api/portraits/men/75.jpg", // Replace with your user's profile picture 
 };
 
 function Landing() {

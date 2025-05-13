@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Navbar from '../Component/Navbar';
-import Logo from '../assets/logo.png'; // Make sure the logo path is correct
+import Logo from '../assets/logo.png';
 
-// Dummy data for appointments
 const appointments = [
   {
     id: 1,
@@ -34,15 +33,50 @@ const appointments = [
 ];
 
 function Records() {
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    setSelectedFile(file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setPreviewUrl(reader.result);
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <Navbar logo={Logo} />
 
       <div className="p-6 max-w-6xl mx-auto mt-8 bg-white rounded-2xl shadow-lg">
-        <h2 className="text-3xl font-bold text-gray-800 mb-6">
-          Records History
-        </h2>
+        <h2 className="text-3xl font-bold text-gray-800 mb-6">Records History</h2>
 
+        {/* Upload Section */}
+        <div className="mb-6">
+          <label className="block mb-2 text-sm font-medium text-gray-700">
+            Upload Your Record (Image):
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
+          />
+          {previewUrl && (
+            <div className="mt-4">
+              <p className="text-sm font-medium text-gray-700">Preview:</p>
+              <img
+                src={previewUrl}
+                alt="Uploaded Record"
+                className="mt-2 max-w-md rounded-xl border border-gray-300"
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Table Section */}
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white border border-gray-200 rounded-lg">
             <thead>

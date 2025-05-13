@@ -196,12 +196,14 @@ function Landing() {
       {/* HEADER SECTION */}
       <Navbar logo={logo} />
 
-      <section className="bg-white py-16 px-6">
+      <section className="bg-white py-16 px-6 ">
         {/* Welcome */}
-        <div className="p-6 text-xl font-semibold">Welcome! {user ? user.name : "Loading..."}</div>
+        <div className="text-2xl font-semibold text-gray-800 py-5 md:p-8">
+           Welcome! {user ? user.name : "Loading..."}
+         </div>
 
         {/* Upcoming Appointments */}
-        <div className="mb-12">
+        <div className="mb-12 md:p-8">
           <h2 className="text-2xl font-bold text-[#258C9B] mb-4">Next Appointment</h2>
           {appointments.length === 0 ? (
             <p className="text-gray-600">No appointment scheduled.</p>
@@ -285,9 +287,9 @@ function Landing() {
 
         {/* Favourites */}
         <div>
-          <h2 className="text-3xl font-bold text-[#258C9B] mb-6">Your Favourites</h2>
+          <h2 className="text-3xl font-bold text-[#258C9B] mb-6 md:p-8">Your Favourites</h2>
           {favorites.length === 0 ? (
-            <p className="text-gray-600">You have no favorite doctors yet. Add some to see them here!</p>
+            <p className="text-gray-600 md:p-8">You have no favorite doctors yet. Add some to see them here!</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {favorites.map((fav) => (
