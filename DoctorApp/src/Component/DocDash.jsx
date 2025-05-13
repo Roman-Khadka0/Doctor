@@ -196,7 +196,11 @@ export default function DocDash() {
               <div>
                 <p className="font-semibold text-gray-700">{doc.name}</p>
                 <p className="text-sm text-gray-500">{doc.title}</p>
-              </div>
+                <p className="text-base text-gray-600 mt-2">
+                {doc.specialty}
+                </p>
+                <p className="flex items-center text-yellow-500 font-semibold ">{doc.rating} <Star size={18} fill="currentColor" className="ml-1" /></p>
+                </div>
             </div>
           ))}
         </div>
