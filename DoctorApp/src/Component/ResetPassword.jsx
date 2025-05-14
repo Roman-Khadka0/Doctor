@@ -15,6 +15,19 @@ const ResetPassword = () => {
     setMessage("");
     setError("");
 
+    // Check if password and confirm password fields match
+    if (newPassword !== confirmNewPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+
+    // Validate password strength
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^])[A-Za-z\d@$!%*?&#^]{8,}$/;
+    const passwordtest = passwordRegex.test(newPassword);
+      if (!passwordtest) {
+        alert("Please use more strong password.");
+        return;
+      }
 
     try {
       const response = await fetch("http://localhost:5000/api/auth/resetPassword", {
