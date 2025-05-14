@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 const ResetPassword = () => {
   const { token } = useParams();
   const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -13,6 +14,20 @@ const ResetPassword = () => {
     setLoading(true);
     setMessage("");
     setError("");
+
+    // Check if password and confirm password fields match
+    if (newPassword !== confirmNewPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+
+    // Validate password strength
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^])[A-Za-z\d@$!%*?&#^]{8,}$/;
+    const passwordtest = passwordRegex.test(newPassword);
+      if (!passwordtest) {
+        alert("Please use more strong password.");
+        return;
+      }
 
     try {
       const response = await fetch("http://localhost:5000/api/auth/resetPassword", {
@@ -52,6 +67,14 @@ const ResetPassword = () => {
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#258C9B]"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Confirm new password"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#258C9B]"
+              value={confirmNewPassword}
+              onChange={(e) => setConfirmNewPassword(e.target.value)}
               required
             />
           </div>
