@@ -237,6 +237,7 @@ const AppointmentPage = () => {
                       time: "",
                       doctorName: appointment.doctorId.name,
                       hospitalName: appointment.doctorId.hospital,
+                      photo: appointment.doctorId.photo,
                     });
                     setShowRescheduleModal(true);
                   }}
@@ -293,7 +294,7 @@ const AppointmentPage = () => {
       {/* Doctor Photo */}
       <div className="flex justify-center mb-4">
         <img
-          src={rescheduleData.doctorPhoto}
+          src={rescheduleData.photo}
           alt={rescheduleData.doctorName}
           className="w-32 h-32 object-cover rounded-full border-4 border-[#258C9B]"
         />
@@ -331,7 +332,7 @@ const AppointmentPage = () => {
             if (data.status === "ok") {
               alert("Appointment rescheduled successfully!");
               setShowRescheduleModal(false);
-              fetchAppointments();
+              fetchAppointments(); // Refresh appointments
             } else {
               alert(data.error || "Failed to reschedule.");
             }

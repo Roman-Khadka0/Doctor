@@ -202,9 +202,110 @@ const cancelAppointment = async (req, res) => {
   }
 };
 
+// Controller to reschedule an appointment
+const rescheduleAppointment = async (req, res) => {
+  const { appointmentId } = req.params;
+  const { date } = req.body;
+
+  try {
+    const appointment = await Appointment.findById(appointmentId);
+    const doctor = await Doctor.findById(appointment.doctorId);
+
+    if (!appointment) {
+      return res.status(404).json({ status: "error", error: "Appointment not found." });
+    }
+
+    // Check if the time is within 15 minutes from now
+    const appointmentDate = new Date(date);
+    const currentDate = new Date();
+
+    // Calculate the time difference
+    const timeDifference = appointmentDate - currentDate; // note: diffference is in milliseconds
+
+    if (timeDifference < 15 * 60 * 1000) {
+      return res.status(400).json({
+        status: "error",
+        error: "The appointment time must be at least 15 minutes from now.",
+      });
+    }
+
+    // check if the new date is same as the old date
+    if (appointment.date.toString() === appointmentDate.toString()) {
+      return res.status(400).json({
+        status: "error",
+        error: "New date and time cannot be same as old date and time.",
+      });
+    }
+
+    // Check if the same doctor is already booked at the same time
+    const existingAppointment = await Appointment.findOne({
+      doctorId: appointment.doctorId,
+      date: appointmentDate,
+    });
+
+    if (existingAppointment) {
+      return res.status(400).json({
+        status: "error",
+        error: "The doctor is already booked at the selected time. Please choose a different time.",
+      });
+    }
+
+    // Check if the user already has an appointment at the same time
+    const userExistingAppointment = await Appointment.findOne({
+      userId: req.user.id,
+      date: appointmentDate,
+    });
+
+    if (userExistingAppointment) {
+      return res.status(400).json({
+        status: "error",
+        error: "You already have an appointment at the selected time. Please choose a different time.",
+      });
+    }
+
+    appointment.date = date;
+    await appointment.save();
+
+    // Send email notification
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: req.user.email, 
+      subject: "Rescheduled Appointment Confirmation",
+      html: `
+        <h1>Appointment Rescheduled</h1>
+        <p>Dear ${req.user.name},</p>
+        <p>Your appointment with the following details has been rescheduled:</p>
+        <ul>
+          <li><strong>Doctor Name:</strong> ${doctor.name}</li>
+          <li><strong>Hospital:</strong> ${doctor.hospital}</li>
+          <li><strong> Updated Date:</strong> ${appointment.date.toLocaleString()}</li>
+          <li><strong>Reason:</strong> ${appointment.reason}</li>
+        </ul>
+        <p>We hope to assist you again in the future.</p>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.json({ status: "ok", message: "Appointment rescheduled successfully." });
+  } catch (error) {
+    console.error("Error rescheduling appointment:", error);
+    res.status(500).json({ status: "error", error: "Failed to reschedule appointment." });
+  }
+};
+
 module.exports = {
   authenticateUser,
   bookAppointment,
   getUserAppointments,
   cancelAppointment,
+  rescheduleAppointment,
 };
