@@ -249,40 +249,7 @@ const AppointmentPage = () => {
           ))
         )}
 
-         <div className="flex justify-center items-center min-h-screen bg-gray-100">
-    <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-xl">
-      <h2 className="text-2xl font-bold text-[#258C9B] text-center mb-6">Book a Doctor Appointment</h2>
-
-      <label className="block mb-2 font-medium">Select Doctor</label>
-      <select className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-4">
-        <option>Choose a doctor</option>
-        {/* Populate options dynamically */}
-      </select>
-
-      <div className="flex gap-4 mb-4">
-        <input
-          type="date"
-          className="w-1/2 border border-gray-300 rounded-lg px-4 py-2"
-          placeholder="dd/mm/yyyy"
-        />
-        <input
-          type="time"
-          className="w-1/2 border border-gray-300 rounded-lg px-4 py-2"
-        />
-      </div>
-
-      <label className="block mb-2 font-medium">Reason for Visit</label>
-      <textarea
-        className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-6"
-        rows="4"
-        placeholder="Describe your reason for visit"
-      ></textarea>
-
-      <button className="w-full bg-[#258C9B] text-white py-3 rounded-lg font-semibold hover:bg-[#1b6e7e]">
-        Book Appointment
-      </button>
-    </div>
-  </div>
+         
 
   {/* Reschedule Modal Overlay */}
   {showRescheduleModal && (

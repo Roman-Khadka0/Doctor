@@ -10,7 +10,7 @@ import Background from "../assets/background.png";
 import Power from "../assets/power.jpg";
 import Schedule from "../assets/schedule.jpg";
 import Booking from "../assets/booking.jpg";
-import Navbar from "../Component/Navbar"
+import Navbar from "./Navbar"
 
 // replace with real authentication logic
 const dummyUser = {

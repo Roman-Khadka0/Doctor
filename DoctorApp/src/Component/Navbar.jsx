@@ -91,17 +91,17 @@ const Header = ({ logo, handleLogout }) => {
         {/* User Section */}
         <div className="relative" ref={dropdownRef}>
           <img
-            src={user?.avatar || fallbackAvatar}
+           src={user?.avatar || fallbackAvatar}
             alt="Profile"
             onClick={() => setShowDropdown(!showDropdown)}
-            className="w-10 h-10 rounded-full border-2 border-white hover:border-gray-300 cursor-pointer transition"
+            className="w-10 h-10 rounded-full border-2 border-white hover:border-gray-300 cursor-pointer transition object-fill"
           />
 
           {showDropdown && (
             <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-10">
               <Link
                 to="/PProfile"
-                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-  100"
               >
                 Edit Account
               </Link>
