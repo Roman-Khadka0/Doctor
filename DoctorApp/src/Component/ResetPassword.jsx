@@ -4,30 +4,22 @@ import { useParams } from "react-router-dom";
 const ResetPassword = () => {
   const { token } = useParams();
   const [newPassword, setNewPassword] = useState("");
-  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setMessage("");
     setError("");
 
-    // Check if password and confirm password fields match
-    if (newPassword !== confirmNewPassword) {
-      alert("Passwords do not match!");
+    if (newPassword !== confirmPassword) {
+      setError("❌ Passwords do not match.");
       return;
     }
 
-    // Validate password strength
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^])[A-Za-z\d@$!%*?&#^]{8,}$/;
-    const passwordtest = passwordRegex.test(newPassword);
-      if (!passwordtest) {
-        alert("Please use more strong password.");
-        return;
-      }
+    setLoading(true);
 
     try {
       const response = await fetch("http://localhost:5000/api/auth/resetPassword", {
@@ -64,17 +56,20 @@ const ResetPassword = () => {
             <input
               type="password"
               placeholder="Enter new password"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#258C9B]"
+              className="w-full px-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#258C9B]"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               required
             />
+          </div>
+          <div>
+            <label className="block text-gray-700 mb-1">Confirm Password</label>
             <input
               type="password"
               placeholder="Confirm new password"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#258C9B]"
-              value={confirmNewPassword}
-              onChange={(e) => setConfirmNewPassword(e.target.value)}
+              className="w-full px-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#258C9B]"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
           </div>
