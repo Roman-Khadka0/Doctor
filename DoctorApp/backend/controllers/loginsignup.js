@@ -105,10 +105,17 @@ const resetPassword = async (req, res) => {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET); // Verify the reset token
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    // Check if new password is same as old password
+    const isSame = await bcrypt.compare(newPassword, user.password);
+    if (isSame) {
+      return res.status(400).json({ error: "New password cannot be the same as the old password." });
+    }
     const encryptedPassword = await bcrypt.hash(newPassword, 10);
-
     await User.findByIdAndUpdate(decoded.id, { password: encryptedPassword });
-
     res.json({ status: "ok", message: "Password reset successful" });
   } catch (error) {
     console.error(error);

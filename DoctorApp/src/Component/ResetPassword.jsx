@@ -19,6 +19,14 @@ const ResetPassword = () => {
       return;
     }
 
+    // Validate password strength
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^])[A-Za-z\d@$!%*?&#^]{8,}$/;
+    const passwordtest = passwordRegex.test(newPassword);
+      if (!passwordtest) {
+        setError("❌ Please use more strong password.");
+        return;
+      }
+
     setLoading(true);
 
     try {

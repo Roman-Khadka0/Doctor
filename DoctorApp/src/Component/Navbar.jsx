@@ -111,12 +111,12 @@ const Header = ({ logo, handleLogout }) => {
               >
                 History
               </Link>
-              <Link
+              {/* <Link
                 to="/Records"
                 className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >
                 Records
-              </Link>
+              </Link> */}
               <button
                 onClick={handleLogoutClick}
                 className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
