@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-// Import assets (images)
+// Assets
 import logo from "../assets/Logo.png";
 import Cdoctor from "../assets/Cdoctor.jpg";
 import Appointment from "../assets/Appointment.jpg";
@@ -10,12 +10,12 @@ import Background from "../assets/background.png";
 import Power from "../assets/power.jpg";
 import Schedule from "../assets/schedule.jpg";
 import Booking from "../assets/booking.jpg";
-import Navbar from "../Component/Navbar"
+import Navbar from "./Navbar"
 
-// Dummy user for now — replace with real authentication logic
+// replace with real authentication logic
 const dummyUser = {
   isLoggedIn: true, // Change this to false to test non-logged-in view
-  profilePic: "https://randomuser.me/api/portraits/men/75.jpg", // Replace with your user's profile picture URL
+  profilePic: "https://randomuser.me/api/portraits/men/75.jpg", // Replace with your user's profile picture 
 };
 
 function Landing() {
@@ -53,7 +53,7 @@ function Landing() {
   }, []);
 
   useEffect(() => {
-    // You can replace this dummy logic with your real login checking logic
+    // replace this dummy logic with your real login checking logic
     setUser(dummyUser.isLoggedIn ? dummyUser : null);
   }, []);
 

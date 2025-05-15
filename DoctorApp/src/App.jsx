@@ -11,6 +11,7 @@ import AdminDashboard from "./Component/AdminDashboard";
 import DocDash from "./Component/DocDash";
 import HomeW from './Component/HomeW'
 import History from "./Component/History";
+import Records from "./Component/Records"
 
 function App() {
 
@@ -29,6 +30,7 @@ function App() {
         <Route path="/docdash" element={<DocDash />} />
         <Route path="/History" element={<History />} />
         <Route path="/Home" element={<Home />} />
+        <Route path="/Records" element={<Records />} />
       </Routes>
     </Router>
   );

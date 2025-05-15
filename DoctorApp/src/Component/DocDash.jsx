@@ -4,19 +4,21 @@ import Navbar from '../Component/Navbar';
 import Logo from '../assets/Logo.png';
 
 export default function DocDash() {
+  // state to hold favs, selected doctor, all docs, sort type & search input
   const [favorites, setFavorites] = useState([]);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [allDoctors, setAllDoctors] = useState([]);
-  const [sortBy, setSortBy] = useState(''); // State to store sorting criteria
-  const [searchTerm, setSearchTerm] = useState(''); // State to store search input
+  const [sortBy, setSortBy] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
+  // fetch doctors + favs when component loads
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/doctors'); // Replace with your backend URL
+        const response = await fetch('http://localhost:5000/api/doctors');
         const data = await response.json();
         if (data.status === 'ok') {
-          setAllDoctors(data.data); // Update the state with fetched doctors
+          setAllDoctors(data.data);
         } else {
           console.error('Failed to fetch doctors:', data.error);
         }
@@ -43,7 +45,7 @@ export default function DocDash() {
 
         const data = await response.json();
         if (data.status === "ok") {
-          setFavorites(data.data); // Set favorites from the backend
+          setFavorites(data.data);
         } else {
           console.error("Failed to fetch favorites:", data.error);
         }
@@ -56,25 +58,20 @@ export default function DocDash() {
     fetchFavorites();
   }, []);
 
-  // Combine search and sorting logic
+  // filtering and sorting doctors
   const sortedDoctors = [...allDoctors]
     .filter((doc) => {
-      // Filter by search term
       return doc.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      doc.specialty.toLowerCase().includes(searchTerm.toLowerCase());
+             doc.specialty.toLowerCase().includes(searchTerm.toLowerCase());
     })
     .sort((a, b) => {
-      // Sort by selected criteria
-      if (sortBy === 'rating') {
-        return b.rating - a.rating; // Sort by rating in descending order
-      } else if (sortBy === 'name') {
-        return a.name.localeCompare(b.name); // Sort alphabetically by name
-      } else if (sortBy === 'specialty') {
-        return a.specialty.localeCompare(b.specialty); // Sort alphabetically by specialty
-      }
-      return 0; // No sorting
+      if (sortBy === 'rating') return b.rating - a.rating;
+      if (sortBy === 'name') return a.name.localeCompare(b.name);
+      if (sortBy === 'specialty') return a.specialty.localeCompare(b.specialty);
+      return 0;
     });
 
+  // handle add/remove favorite
   const toggleFavorite = async (doctor) => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -83,8 +80,9 @@ export default function DocDash() {
     }
 
     try {
-      if (favorites && favorites.some((fav) => fav._id === doctor._id)) {
-        // Remove from favorites
+      // check if already in favs
+      if (favorites.some((fav) => fav._id === doctor._id)) {
+        // remove fav
         const response = await fetch("http://localhost:5000/api/favorites/remove", {
           method: "POST",
           headers: {
@@ -96,12 +94,12 @@ export default function DocDash() {
 
         const data = await response.json();
         if (data.status === "ok") {
-          setFavorites(data.data); // Update favorites from the backend
+          setFavorites(data.data);
         } else {
           console.error("Failed to remove favorite:", data.error);
         }
       } else {
-        // Add to favorites
+        // add fav
         const response = await fetch("http://localhost:5000/api/favorites/add", {
           method: "POST",
           headers: {
@@ -113,7 +111,7 @@ export default function DocDash() {
 
         const data = await response.json();
         if (data.status === "ok") {
-          setFavorites(data.data); // Update favorites from the backend
+          setFavorites(data.data);
         } else {
           console.error("Failed to add favorite:", data.error);
         }
@@ -123,19 +121,23 @@ export default function DocDash() {
     }
   };
 
+  // handle clicking doctor card
   const handleCardClick = (doctor) => {
     setSelectedDoctor(doctor);
   };
 
+  // close popup
   const closePopup = () => {
     setSelectedDoctor(null);
   };
 
   return (
     <div className="min-h-screen bg-gray-100">
+      {/* navbar with logo */}
       <Navbar logo={Logo} />
 
       <div className="px-6 py-4">
+        {/* search bar */}
         <div className="mt-4 flex flex-col md:flex-row md:items-center md:justify-between">
           <h2 className="text-2xl font-semibold text-gray-700 mb-2 md:mb-0">DOCTORS</h2>
           <input
@@ -147,6 +149,7 @@ export default function DocDash() {
           />
         </div>
 
+        {/* sorting options */}
         <div className="mt-4 flex flex-col md:flex-row md:items-center">
           <h3 className="text-lg font-medium text-teal-600">Sort By:</h3>
           <select
@@ -161,6 +164,7 @@ export default function DocDash() {
           </select>
         </div>
 
+        {/* doctor cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
           {sortedDoctors.map((doc) => (
             <div
@@ -168,19 +172,20 @@ export default function DocDash() {
               className="relative bg-white rounded-xl p-4 shadow hover:shadow-lg transition-all aspect-square flex flex-col justify-between cursor-pointer"
               onClick={() => handleCardClick(doc)}
             >
+              {/* heart icon for favorite */}
               <button
                 className="absolute top-2 right-2 text-gray-400 hover:text-red-500 z-10"
                 onClick={(e) => {
-                  e.stopPropagation();
+                  e.stopPropagation(); // so card click doesn’t trigger
                   toggleFavorite(doc);
                 }}
-                aria-label="Toggle Favorite"
               >
                 {favorites.some((fav) => fav._id === doc._id)
                   ? <Heart fill="red" color="red" size={20} />
                   : <HeartOff size={20} />}
               </button>
 
+              {/* doc image */}
               <div className="w-full aspect-square bg-blue-100 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
                 <img
                   src={doc.photo}
@@ -193,34 +198,36 @@ export default function DocDash() {
                 />
               </div>
 
+              {/* doctor details */}
               <div>
                 <p className="font-semibold text-gray-700">{doc.name}</p>
                 <p className="text-sm text-gray-500">{doc.title}</p>
+                <p className="text-base text-gray-600 mt-2">{doc.specialty}</p>
+                <p className="flex items-center text-yellow-500 font-semibold ">{doc.rating} <Star size={18} fill="currentColor" className="ml-1" /></p>
               </div>
             </div>
           ))}
         </div>
 
+        {/* no doctors found */}
         {sortedDoctors.length === 0 && (
           <p className="text-center text-gray-500 mt-8">No doctors found.</p>
         )}
       </div>
 
+      {/* popup with selected doctor info */}
       {selectedDoctor && (
-        <div
-          className="fixed inset-0 flex justify-center items-center z-50"
-          style={{ backgroundColor: 'rgba(255, 255, 255, 0.84)' }}
-        >
+        <div className="fixed inset-0 flex justify-center items-center z-50" style={{ backgroundColor: 'rgba(255, 255, 255, 0.84)' }}>
           <div className="bg-white p-6 rounded-xl max-w-2xl w-full mx-4 relative shadow-lg">
             <button
               className="absolute top-2 right-2 text-black hover:text-black"
-              style={{ color: 'black' }}
               onClick={closePopup}
             >
               ✖
             </button>
 
             <div className="flex gap-6">
+              {/* left side image */}
               <div className="w-full aspect-square">
                 <img
                   src={selectedDoctor.photo}
@@ -233,6 +240,7 @@ export default function DocDash() {
                 />
               </div>
 
+              {/* right side doctor info */}
               <div className="w-full aspect-square flex flex-col justify-between">
                 <div>
                   <h2 className="text-2xl font-bold flex items-center gap-2">
@@ -244,9 +252,7 @@ export default function DocDash() {
 
                   <div className="mt-4 text-gray-800 text-base space-y-2">
                     <p className="font-medium">📞 {selectedDoctor.phone}</p>
-                    <p>
-                      {selectedDoctor.about}
-                    </p>
+                    <p>{selectedDoctor.about}</p>
                   </div>
                 </div>
 
