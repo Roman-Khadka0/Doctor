@@ -98,7 +98,7 @@ const Header = ({ logo, handleLogout }) => {
           />
 
           {showDropdown && (
-            <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-10">
+            <div className="absolut55e right-0 mt-2 w-40 bg-white rounded-md shadow-lg z-10">
               <Link
                 to="/PProfile"
                 className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-  100"
@@ -111,12 +111,12 @@ const Header = ({ logo, handleLogout }) => {
               >
                 History
               </Link>
-              <Link
+              {/* <Link
                 to="/Records"
                 className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >
                 Records
-              </Link>
+              </Link> */}
               <button
                 onClick={handleLogoutClick}
                 className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
