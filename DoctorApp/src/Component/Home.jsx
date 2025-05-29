@@ -8,7 +8,6 @@ import Navbar from "../Component/Navbar";
 function Landing() {
   const [user, setUser] = useState(null);
   const [appointments, setAppointments] = useState([]);
-  const [showAllDoctors, setShowAllDoctors] = useState(false);
   const [favorites, setFavorites] = useState([]);
   const [doctors, setDoctors] = useState([]); // State to store doctors fetched from the backend
 

@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Lock, Mail } from "lucide-react"; // Icons for email and password fields
 import Black from "../assets/Black.png"; // Left side image
 import { Link } from "react-router-dom"; // For navigation between components
 import { jwtDecode } from "jwt-decode"; // Decode JWT token to get user role
+
+
 
 const Login = () => {
   // State variables to store email and password

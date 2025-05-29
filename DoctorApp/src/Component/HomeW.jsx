@@ -211,20 +211,7 @@ function Landing() {
               <li>FAQ</li>
               <li>Special Offer</li>
             </ul>
-            <form onSubmit={handleSubscribe} className="mt-6">
-              <p className="text-sm mb-2 font-medium text-white">
-                Subscribe to EasyDoc:
-              </p>
-              <input
-                type="email"
-                placeholder="Email"
-                className="border border-white text-white px-4 py-2 rounded w-full mb-2 bg-transparent"
-                required
-              />
-              <button type="submit" className="bg-sky-500 text-white px-4 py-2 rounded">
-                Submit
-              </button>
-            </form>
+            
           </div>
 
           <div>
